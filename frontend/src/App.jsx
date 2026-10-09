@@ -1,0 +1,55 @@
+import { Routes, Route } from 'react-router-dom';
+import { CartProvider } from './context/CartContext.jsx';
+import { AuthProvider } from './context/AuthContext.jsx';
+
+// ─── Customer Pages ──────────────────────────────────────────────────────────
+import HomePage      from './pages/customer/HomePage.jsx';
+import MenuPage      from './pages/customer/MenuPage.jsx';
+import CartPage      from './pages/customer/CartPage.jsx';
+import CheckoutPage  from './pages/customer/CheckoutPage.jsx';
+import ContactPage   from './pages/customer/ContactPage.jsx';
+
+// ─── Auth Pages ──────────────────────────────────────────────────────────────
+import LoginPage    from './pages/auth/LoginPage.jsx';
+import RegisterPage from './pages/auth/RegisterPage.jsx';
+
+// ─── Admin Pages ─────────────────────────────────────────────────────────────
+import AdminLayout      from './pages/admin/AdminLayout.jsx';
+import AdminDashboard   from './pages/admin/AdminDashboard.jsx';
+import AdminMenuPage    from './pages/admin/AdminMenuPage.jsx';
+import AdminMenuForm    from './pages/admin/AdminMenuForm.jsx';
+import AdminOrdersPage  from './pages/admin/AdminOrdersPage.jsx';
+import AdminChefsPage   from './pages/admin/AdminChefsPage.jsx';
+import AdminContactPage from './pages/admin/AdminContactPage.jsx';
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <CartProvider>
+        <Routes>
+          {/* ── Customer Routes ── */}
+          <Route path="/"         element={<HomePage />} />
+          <Route path="/menu"     element={<MenuPage />} />
+          <Route path="/cart"     element={<CartPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/contact"  element={<ContactPage />} />
+
+          {/* ── Auth Routes ── */}
+          <Route path="/login"    element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+
+          {/* ── Admin Routes (nested under sidebar layout) ── */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index               element={<AdminDashboard />} />
+            <Route path="menu"         element={<AdminMenuPage />} />
+            <Route path="menu/new"     element={<AdminMenuForm />} />
+            <Route path="menu/edit/:id" element={<AdminMenuForm />} />
+            <Route path="orders"       element={<AdminOrdersPage />} />
+            <Route path="chefs"        element={<AdminChefsPage />} />
+            <Route path="contact"      element={<AdminContactPage />} />
+          </Route>
+        </Routes>
+      </CartProvider>
+    </AuthProvider>
+  );
+}
