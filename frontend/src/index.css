@@ -84,4 +84,130 @@
   .sidebar-link.active {
     @apply bg-fuchsiusOrange/10 text-fuchsiusOrange border-l-2 border-fuchsiusOrange;
   }
+
+  /* ─── PRANEETHA Brand Components ────────────────────────────────────────── */
+  .praneetha-canvas {
+    background-color: #0a0a0c;
+    background-image: 
+      radial-gradient(circle at 50% 38%, rgba(230, 98, 0, 0.08) 0%, rgba(10, 10, 12, 0.98) 72%);
+    min-height: 100vh;
+  }
+
+  .praneetha-card-frame {
+    background: #141417;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow: 
+      0 20px 50px -10px rgba(0, 0, 0, 0.9),
+      0 0 25px rgba(230, 98, 0, 0.03);
+    border-radius: 1.25rem;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+  }
+
+  .praneetha-card-frame:hover {
+    box-shadow: 
+      0 25px 60px -10px rgba(0, 0, 0, 0.95),
+      0 0 35px rgba(230, 98, 0, 0.06);
+  }
+
+  .praneetha-input {
+    background-color: #1a1a1e;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    color: #ffffff;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .praneetha-input::placeholder {
+    color: #636369;
+  }
+
+  .praneetha-input:focus {
+    outline: none;
+    background-color: #1e1e23;
+    border-color: #e66200;
+    box-shadow: 0 0 0 1px rgba(230, 98, 0, 0.6), 0 0 14px rgba(230, 98, 0, 0.25);
+  }
+
+  .praneetha-btn-primary {
+    background-color: #e66200;
+    color: #ffffff;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 14px rgba(230, 98, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .praneetha-btn-primary:hover {
+    background-color: #f37000;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(230, 98, 0, 0.45);
+  }
+
+  .praneetha-btn-primary:active {
+    transform: translateY(0) scale(0.985);
+  }
+
+  .praneetha-btn-primary::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 40%;
+    height: 200%;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.18) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(25deg);
+    transition: none;
+  }
+
+  .praneetha-btn-primary:hover::after {
+    left: 140%;
+    transition: left 0.75s ease-in-out;
+  }
+}
+
+/* Custom Checkbox */
+input[type="checkbox"].praneetha-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1.05rem;
+  height: 1.05rem;
+  background-color: #1c1c20;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0.25rem;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+input[type="checkbox"].praneetha-checkbox:checked {
+  background-color: #e66200;
+  border-color: #e66200;
+}
+
+input[type="checkbox"].praneetha-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+input[type="checkbox"].praneetha-checkbox:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(230, 98, 0, 0.35);
 }

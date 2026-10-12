@@ -10,8 +10,10 @@ import CheckoutPage  from './pages/customer/CheckoutPage.jsx';
 import ContactPage   from './pages/customer/ContactPage.jsx';
 
 // ─── Auth Pages ──────────────────────────────────────────────────────────────
-import LoginPage    from './pages/auth/LoginPage.jsx';
-import RegisterPage from './pages/auth/RegisterPage.jsx';
+import LoginPage          from './pages/auth/LoginPage.jsx';
+import RegisterPage       from './pages/auth/RegisterPage.jsx';
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage.jsx';
+import ResetPasswordPage  from './pages/auth/ResetPasswordPage.jsx';
 
 // ─── Admin Pages ─────────────────────────────────────────────────────────────
 import AdminLayout      from './pages/admin/AdminLayout.jsx';
@@ -28,15 +30,18 @@ export default function App() {
       <CartProvider>
         <Routes>
           {/* ── Customer Routes ── */}
-          <Route path="/"         element={<HomePage />} />
-          <Route path="/menu"     element={<MenuPage />} />
-          <Route path="/cart"     element={<CartPage />} />
-          <Route path="/checkout" element={<CheckoutPage />} />
-          <Route path="/contact"  element={<ContactPage />} />
+          <Route path="/"               element={<HomePage />} />
+          <Route path="/menu"           element={<MenuPage />} />
+          <Route path="/cart"           element={<CartPage />} />
+          <Route path="/checkout"       element={<CheckoutPage />} />
+          <Route path="/contact"        element={<ContactPage />} />
 
           {/* ── Auth Routes ── */}
-          <Route path="/login"    element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/login"           element={<LoginPage />} />
+          <Route path="/admin-login"     element={<LoginPage />} />
+          <Route path="/register"        element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password"  element={<ResetPasswordPage />} />
 
           {/* ── Admin Routes (nested under sidebar layout) ── */}
           <Route path="/admin" element={<AdminLayout />}>
