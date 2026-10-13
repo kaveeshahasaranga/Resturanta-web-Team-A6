@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { NavLink, Outlet, Link, useNavigate } from 'react-router-dom';
 import { Bell, ChefHat, ClipboardList, ExternalLink, LayoutDashboard, LogOut, Mail, Menu as MenuIcon, UtensilsCrossed } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
@@ -9,11 +10,28 @@ const navItems = [
   { to: '/admin/chefs', label: 'Chefs', icon: ChefHat },
   { to: '/admin/orders', label: 'Orders', icon: ClipboardList },
   { to: '/admin/contact', label: 'Messages', icon: Mail },
+=======
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import {
+  UtensilsCrossed, LayoutDashboard, ListOrdered, ChefHat,
+  MessageSquare, LogOut, Menu, X, ShoppingBag
+} from 'lucide-react';
+import { useState } from 'react';
+import { useAuth } from '../../context/AuthContext.jsx';
+
+const NAV_ITEMS = [
+  { to: '/admin',         label: 'Dashboard',    icon: LayoutDashboard, end: true },
+  { to: '/admin/menu',    label: 'Menu Items',   icon: UtensilsCrossed },
+  { to: '/admin/orders',  label: 'Orders',       icon: ShoppingBag },
+  { to: '/admin/chefs',   label: 'Chefs',        icon: ChefHat },
+  { to: '/admin/contact', label: 'Messages',     icon: MessageSquare },
+>>>>>>> f9cef1f (add MenuPage component with menu fetching, filtering, and search functionality)
 ];
 
 export default function AdminLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+<<<<<<< HEAD
 
   const handleLogout = () => {
     logout();
@@ -50,6 +68,81 @@ export default function AdminLayout() {
         <main className="flex-1 px-4 py-7 sm:px-7 sm:py-9"><Outlet /></main>
         <Footer />
       </div>
+=======
+  const [collapsed, setCollapsed] = useState(false);
+
+  const handleLogout = () => { logout(); navigate('/login'); };
+
+  return (
+    <div className="min-h-screen flex bg-fuchsiusBlack">
+
+      {/* ─── Fixed Left Sidebar ───────────────────────────────────────────── */}
+      <aside className={`fixed inset-y-0 left-0 z-40 flex flex-col bg-neutral-950 border-r border-white/10
+          transition-all duration-300
+          ${collapsed ? 'w-16' : 'w-64'}`}
+      >
+        {/* Logo / Toggle */}
+        <div className="flex items-center justify-between h-16 px-4 border-b border-white/10 shrink-0">
+          {!collapsed && (
+            <div className="flex items-center gap-2">
+              <UtensilsCrossed className="w-6 h-6 text-fuchsiusOrange shrink-0" />
+              <span className="text-base font-serif font-bold tracking-widest truncate">FUCHSIUS</span>
+            </div>
+          )}
+          <button
+            onClick={() => setCollapsed(c => !c)}
+            className="p-1.5 rounded-lg text-gray-500 hover:text-white hover:bg-white/5 transition-colors ml-auto"
+            aria-label="Toggle sidebar"
+          >
+            {collapsed ? <Menu className="w-5 h-5" /> : <X className="w-4 h-4" />}
+          </button>
+        </div>
+
+        {/* Nav Links */}
+        <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-1">
+          {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={end}
+              className={({ isActive }) =>
+                `sidebar-link ${isActive ? 'active' : ''} ${collapsed ? 'justify-center px-2' : ''}`
+              }
+              title={collapsed ? label : undefined}
+            >
+              <Icon className="w-5 h-5 shrink-0" />
+              {!collapsed && <span className="text-sm font-medium">{label}</span>}
+            </NavLink>
+          ))}
+        </nav>
+
+        {/* User + Logout */}
+        <div className="border-t border-white/10 p-3 shrink-0">
+          {!collapsed && user && (
+            <div className="px-2 py-2 mb-2">
+              <p className="text-xs font-semibold text-fuchsiusWhite truncate">{user.name}</p>
+              <p className="text-xs text-gray-500 truncate">{user.email}</p>
+            </div>
+          )}
+          <button
+            onClick={handleLogout}
+            className={`sidebar-link w-full text-red-400 hover:bg-red-500/10 hover:text-red-300
+              ${collapsed ? 'justify-center px-2' : ''}`}
+            title={collapsed ? 'Logout' : undefined}
+          >
+            <LogOut className="w-5 h-5 shrink-0" />
+            {!collapsed && <span className="text-sm font-medium">Logout</span>}
+          </button>
+        </div>
+      </aside>
+
+      {/* ─── Main Content ─────────────────────────────────────────────────── */}
+      <main className={`flex-1 transition-all duration-300 ${collapsed ? 'ml-16' : 'ml-64'} min-h-screen`}>
+        <div className="p-6 md:p-8">
+          <Outlet />
+        </div>
+      </main>
+>>>>>>> f9cef1f (add MenuPage component with menu fetching, filtering, and search functionality)
     </div>
   );
 }
