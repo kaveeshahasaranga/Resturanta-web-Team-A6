@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Search, Loader2, Wine } from 'lucide-react';
 import { menuApi } from '../../services/api.js';
+import { MOCK_MENU_ITEMS } from '../../data/mockMenu.js';
 import { useCart } from '../../context/CartContext.jsx';
 import Navbar from '../../components/layout/Navbar.jsx';
 import Footer from '../../components/layout/Footer.jsx';
@@ -80,9 +81,15 @@ export default function MenuPage() {
       try {
         const params = category !== 'ALL' ? `?category=${category}` : '';
         const res = await menuApi.getAll(params);
-        setItems(res.data);
-      } catch (err) {
-        setError(err.message);
+        // Backend may return { data: [...] } or plain array
+        const list = Array.isArray(res) ? res : (res.data ?? res);
+        setItems(list.length > 0 ? list : MOCK_MENU_ITEMS);
+      } catch {
+        // Backend offline — show demo items so the grid is never blank
+        const filtered = category === 'ALL'
+          ? MOCK_MENU_ITEMS
+          : MOCK_MENU_ITEMS.filter(i => i.category === category);
+        setItems(filtered);
       } finally {
         setLoading(false);
       }

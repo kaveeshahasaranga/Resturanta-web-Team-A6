@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-import React from 'react';
-import { Link } from 'react-router-dom';
-
-export default function ContactPage() {
-  return (
-    <div className="min-h-screen bg-[#09090b] text-white flex flex-col items-center justify-center p-6 text-center">
-      <h1 className="font-serif text-3xl mb-4">Concierge Contact</h1>
-      <Link to="/login" className="praneetha-btn-primary">Return to Access Portal</Link>
-=======
 import { useState } from 'react';
 import { contactApi } from '../../services/api.js';
 import { Send, CheckCircle } from 'lucide-react';
@@ -82,7 +72,6 @@ export default function ContactPage() {
         </div>
       </main>
       <Footer />
->>>>>>> f9cef1f (add MenuPage component with menu fetching, filtering, and search functionality)
     </div>
   );
 }

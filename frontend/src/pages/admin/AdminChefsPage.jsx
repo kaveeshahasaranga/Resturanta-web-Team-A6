@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-import React from 'react';
-export default function AdminChefsPage() {
-  return <div className="text-white">Admin Chefs Management</div>;
-=======
 import { useEffect, useState } from 'react';
 import { Loader2, Trash2, ChefHat } from 'lucide-react';
 import { chefApi } from '../../services/api.js';
@@ -64,5 +59,4 @@ export default function AdminChefsPage() {
       )}
     </div>
   );
->>>>>>> f9cef1f (add MenuPage component with menu fetching, filtering, and search functionality)
 }

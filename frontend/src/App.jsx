@@ -4,24 +4,16 @@ import { AuthProvider } from './context/AuthContext.jsx';
 import ProtectedRoute from './components/auth/ProtectedRoute.jsx';
 
 // ─── Customer Pages ──────────────────────────────────────────────────────────
-<<<<<<< HEAD
-import HomePage      from './pages/customer/HomePage.jsx';
-import MenuPage      from './pages/customer/MenuPage.jsx';
-import CartPage      from './pages/customer/CartPage.jsx';
-import CheckoutPage  from './pages/customer/CheckoutPage.jsx';
-import OrderConfirmationPage from './pages/customer/OrderConfirmationPage.jsx';
-import ContactPage   from './pages/customer/ContactPage.jsx';
-import ChefDetailPage from './pages/customer/ChefDetailPage.jsx';
-import CustomerProfilePage from './pages/customer/CustomerProfilePage.jsx';
-=======
-import HomePage           from './pages/customer/HomePage.jsx';
-import AboutPage          from './pages/customer/AboutPage.jsx';
-import MenuPage           from './pages/customer/MenuPage.jsx';
-import MenuItemDetailPage from './pages/customer/MenuItemDetailPage.jsx';
-import CartPage           from './pages/customer/CartPage.jsx';
-import CheckoutPage       from './pages/customer/CheckoutPage.jsx';
-import ContactPage        from './pages/customer/ContactPage.jsx';
->>>>>>> f9cef1f (add MenuPage component with menu fetching, filtering, and search functionality)
+import HomePage               from './pages/customer/HomePage.jsx';
+import AboutPage              from './pages/customer/AboutPage.jsx';
+import MenuPage               from './pages/customer/MenuPage.jsx';
+import MenuItemDetailPage     from './pages/customer/MenuItemDetailPage.jsx';
+import CartPage               from './pages/customer/CartPage.jsx';
+import CheckoutPage           from './pages/customer/CheckoutPage.jsx';
+import OrderConfirmationPage  from './pages/customer/OrderConfirmationPage.jsx';
+import ContactPage            from './pages/customer/ContactPage.jsx';
+import ChefDetailPage         from './pages/customer/ChefDetailPage.jsx';
+import CustomerProfilePage    from './pages/customer/CustomerProfilePage.jsx';
 
 // ─── Auth Pages ──────────────────────────────────────────────────────────────
 import LoginPage          from './pages/auth/LoginPage.jsx';
@@ -44,27 +36,19 @@ export default function App() {
       <CartProvider>
         <Routes>
           {/* ── Customer Routes ── */}
-<<<<<<< HEAD
-          <Route path="/"               element={<HomePage />} />
-          <Route path="/menu"           element={<MenuPage />} />
-          <Route path="/cart"           element={<CartPage />} />
-          <Route path="/checkout"       element={<CheckoutPage />} />
-          <Route path="/order-confirmation/:orderId" element={<OrderConfirmationPage />} />
-          <Route path="/contact"        element={<ContactPage />} />
-          <Route path="/chefs"          element={<ChefDetailPage />} />
-          <Route path="/chefs/:chefId"  element={<ChefDetailPage />} />
-          <Route path="/profile"        element={<CustomerProfilePage />} />
-          <Route path="/profile/:tab"   element={<CustomerProfilePage />} />
-          <Route path="/customer/profile" element={<CustomerProfilePage />} />
-=======
-          <Route path="/"         element={<HomePage />} />
-          <Route path="/about"    element={<AboutPage />} />
-          <Route path="/menu"     element={<MenuPage />} />
-          <Route path="/menu/:id" element={<MenuItemDetailPage />} />
-          <Route path="/cart"     element={<CartPage />} />
-          <Route path="/checkout" element={<CheckoutPage />} />
-          <Route path="/contact"  element={<ContactPage />} />
->>>>>>> f9cef1f (add MenuPage component with menu fetching, filtering, and search functionality)
+          <Route path="/"                              element={<HomePage />} />
+          <Route path="/about"                         element={<AboutPage />} />
+          <Route path="/menu"                          element={<MenuPage />} />
+          <Route path="/menu/:id"                      element={<MenuItemDetailPage />} />
+          <Route path="/cart"                          element={<CartPage />} />
+          <Route path="/checkout"                      element={<CheckoutPage />} />
+          <Route path="/order-confirmation/:orderId"   element={<OrderConfirmationPage />} />
+          <Route path="/contact"                       element={<ContactPage />} />
+          <Route path="/chefs"                         element={<ChefDetailPage />} />
+          <Route path="/chefs/:chefId"                 element={<ChefDetailPage />} />
+          <Route path="/profile"                       element={<CustomerProfilePage />} />
+          <Route path="/profile/:tab"                  element={<CustomerProfilePage />} />
+          <Route path="/customer/profile"              element={<CustomerProfilePage />} />
 
           {/* ── Auth Routes ── */}
           <Route path="/login"           element={<LoginPage />} />

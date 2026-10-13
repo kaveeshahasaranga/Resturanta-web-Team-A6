@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-import React from 'react';
-import { Navigate, Link } from 'react-router-dom';
-
-export default function HomePage() {
-  return <Navigate to="/login" replace />;
-=======
 import { Link } from 'react-router-dom';
 import { UtensilsCrossed, ArrowRight, Star } from 'lucide-react';
 import Navbar from '../../components/layout/Navbar.jsx';
@@ -50,5 +43,4 @@ export default function HomePage() {
       <Footer />
     </div>
   );
->>>>>>> f9cef1f (add MenuPage component with menu fetching, filtering, and search functionality)
 }

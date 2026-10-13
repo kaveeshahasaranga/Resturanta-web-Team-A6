@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-import React from 'react';
-export default function AdminContactPage() {
-  return <div className="text-white">Admin Contact Messages</div>;
-=======
 import { useEffect, useState } from 'react';
 import { Loader2, Trash2, Mail, CheckCheck } from 'lucide-react';
 import { contactApi } from '../../services/api.js';
@@ -91,5 +86,4 @@ export default function AdminContactPage() {
       )}
     </div>
   );
->>>>>>> f9cef1f (add MenuPage component with menu fetching, filtering, and search functionality)
 }

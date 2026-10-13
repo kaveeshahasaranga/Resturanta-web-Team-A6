@@ -1,19 +1,3 @@
-<<<<<<< HEAD
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import AuthLayout from '../../components/auth/AuthLayout.jsx';
-import RegisterCard from '../../components/auth/RegisterCard.jsx';
-
-export default function RegisterPage() {
-  const navigate = useNavigate();
-
-  return (
-    <AuthLayout activeView="register">
-      <RegisterCard
-        onSwitchToLogin={() => navigate('/login')}
-      />
-    </AuthLayout>
-=======
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
@@ -81,6 +65,5 @@ export default function RegisterPage() {
         </p>
       </div>
     </div>
->>>>>>> f9cef1f (add MenuPage component with menu fetching, filtering, and search functionality)
   );
 }
