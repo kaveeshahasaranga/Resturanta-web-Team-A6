@@ -8,6 +8,7 @@ import MenuPage      from './pages/customer/MenuPage.jsx';
 import CartPage      from './pages/customer/CartPage.jsx';
 import CheckoutPage  from './pages/customer/CheckoutPage.jsx';
 import ContactPage   from './pages/customer/ContactPage.jsx';
+import ChefDetailPage from './pages/customer/ChefDetailPage.jsx';
 
 // ─── Auth Pages ──────────────────────────────────────────────────────────────
 import LoginPage          from './pages/auth/LoginPage.jsx';
@@ -35,6 +36,8 @@ export default function App() {
           <Route path="/cart"           element={<CartPage />} />
           <Route path="/checkout"       element={<CheckoutPage />} />
           <Route path="/contact"        element={<ContactPage />} />
+          <Route path="/chefs"          element={<ChefDetailPage />} />
+          <Route path="/chefs/:chefId"  element={<ChefDetailPage />} />
 
           {/* ── Auth Routes ── */}
           <Route path="/login"           element={<LoginPage />} />

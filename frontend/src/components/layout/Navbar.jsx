@@ -15,10 +15,12 @@ export default function Navbar() {
   const navLinks = [
     { to: '/',       label: 'Home' },
     { to: '/menu',   label: 'Menu' },
+    { to: '/chefs',  label: 'Chefs' },
     { to: '/contact', label: 'Contact' },
   ];
 
-  const isActive = (path) => location.pathname === path;
+  const isActive = (path) => location.pathname === path
+    || (path === '/chefs' && location.pathname.startsWith('/chefs/'));
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/10">

@@ -1,0 +1,282 @@
+[
+  {
+    "id": "ruwan-jayasekara",
+    "name": "Ruwan Jayasekara",
+    "firstName": "Ruwan",
+    "lastName": "Jayasekara",
+    "role": "Executive Chef",
+    "title": "Executive Chef & Keeper of the Clay",
+    "image": "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=1000&q=80&auto=format&fit=crop",
+    "since": "2009",
+    "venue": "Galle Fort Flagship Hearth",
+    "rating": "4.9",
+    "tastings": "1,240",
+    "biography": [
+      "Raised between the cinnamon groves of Matale and his grandmother's soot-blackened kitchen, Ruwan has spent two decades reviving the slow clay-pot traditions of Sri Lanka's southern coast.",
+      "He trained under master curry-makers in Batticaloa and Jaffna before leading Praneetha's hearth, where every dish is braised over wild cinnamon timber in unglazed Kelani river terracotta."
+    ],
+    "specialty": "Clay-Pot Lagoon Curries",
+    "specialtyDescription": "12-hour terracotta braises over cinnamon embers",
+    "experience": "21 Years at the Hearth",
+    "experienceDescription": "Batticaloa · Jaffna · Colombo · Galle",
+    "expertise": [
+      "Southern Sri Lankan",
+      "Tamil Jaffna",
+      "Clay-Pot Braising",
+      "Wood-Fire Grilling",
+      "Coastal Seafood",
+      "Heirloom Spice Blends"
+    ],
+    "dishes": [
+      {
+        "image": "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800&q=80&auto=format&fit=crop",
+        "imageAlt": "Sri Lankan chicken curry served with flatbread",
+        "label": "HEIRLOOM RECIPE #07",
+        "price": "LKR 14,800",
+        "name": "Hearth Chicken Curry & Godamba",
+        "description": "Village chicken simmered in roasted curry powder, served with flaky godamba roti."
+      },
+      {
+        "image": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=800&q=80&auto=format&fit=crop",
+        "imageAlt": "A richly spiced traditional curry",
+        "label": "FOREST HARVEST",
+        "price": "LKR 4,200",
+        "name": "Overnight Polos Ambula",
+        "description": "Baby jackfruit braised until its fibers dissolve over dying coals."
+      },
+      {
+        "image": "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=800&q=80&auto=format&fit=crop",
+        "imageAlt": "A bowl of seasoned rice",
+        "label": "HERITAGE GRAIN",
+        "price": "LKR 3,900",
+        "name": "Ember-Toasted Heritage Rice",
+        "description": "Suduru samba rice tossed with cashews, carrot, and curry leaves in a clay wok."
+      }
+    ],
+    "quote": "The clay remembers every curry it has held. My work is only to listen to the fire and let the pot finish the story."
+  },
+  {
+    "id": "arjun-thiruchelvam",
+    "name": "Arjun Thiruchelvam",
+    "firstName": "Arjun",
+    "lastName": "Thiruchelvam",
+    "role": "Chef de Cuisine",
+    "title": "Chef de Cuisine & Keeper of Jaffna Flavour",
+    "image": "https://images.unsplash.com/photo-1583394293214-28ded15ee548?w=1000&q=80&auto=format&fit=crop",
+    "since": "2014",
+    "venue": "Galle Fort Flagship Hearth",
+    "rating": "4.8",
+    "tastings": "980",
+    "biography": [
+      "Arjun brings the bold, layered flavours of Jaffna to Praneetha's kitchen. His cooking honours family recipes and the fragrant, carefully balanced spice blends he grew up with.",
+      "At the hearth, he pairs those traditions with seasonal island produce, building generous, deeply savoury dishes that bring regional Tamil cooking to the table."
+    ],
+    "specialty": "Jaffna Spice & Seafood",
+    "specialtyDescription": "Aromatic roasted masalas and fresh northern-coast seafood",
+    "experience": "15 Years in the Kitchen",
+    "experienceDescription": "Jaffna · Trincomalee · Colombo · Galle",
+    "expertise": [
+      "Jaffna Tamil Cuisine",
+      "Roasted Curry Blends",
+      "Coastal Seafood",
+      "Coconut Braising",
+      "Traditional Rice Dishes",
+      "Seasonal Island Produce"
+    ],
+    "dishes": [
+      {
+        "image": "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800&q=80&auto=format&fit=crop",
+        "imageAlt": "A rich, spiced curry",
+        "label": "NORTHERN COAST",
+        "price": "LKR 12,400",
+        "name": "Jaffna Crab Curry",
+        "description": "Fresh crab simmered in roasted Jaffna spices, coconut, and fragrant curry leaves."
+      },
+      {
+        "image": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=800&q=80&auto=format&fit=crop",
+        "imageAlt": "Traditional Sri Lankan curry",
+        "label": "FAMILY RECIPE",
+        "price": "LKR 5,600",
+        "name": "Northern Mutton Kulambu",
+        "description": "Slow-cooked mutton in a deep, aromatic masala with a gentle coconut finish."
+      },
+      {
+        "image": "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=800&q=80&auto=format&fit=crop",
+        "imageAlt": "Seasoned rice with vegetables",
+        "label": "HEARTH GRAINS",
+        "price": "LKR 3,600",
+        "name": "Curry Leaf Ghee Rice",
+        "description": "Fragrant rice toasted in ghee with cashews, curry leaves, and warm spices."
+      }
+    ],
+    "quote": "A good spice blend does not hide an ingredient. It gives every flavour a place at the table."
+  },
+  {
+    "id": "malik-fernando",
+    "name": "Malik Fernando",
+    "firstName": "Malik",
+    "lastName": "Fernando",
+    "role": "Grill & Ember Master",
+    "title": "Grill & Ember Master",
+    "image": "https://images.unsplash.com/photo-1581299894007-aaa50297cf16?w=1000&q=80&auto=format&fit=crop",
+    "since": "2016",
+    "venue": "The Open Ember Hearth, Galle Fort",
+    "rating": "4.9",
+    "tastings": "860",
+    "biography": [
+      "Malik works by instinct and by the fire. He builds each ember bed for the ingredient at hand, bringing a measured smokiness and a beautiful char to the hearth's grilled dishes.",
+      "His approach starts with the island's catch and seasonal produce, finished with bright marinades, hand-ground spices, and a close eye on the changing heat."
+    ],
+    "specialty": "Wood-Fire Grilling",
+    "specialtyDescription": "Ember-grilled seafood and produce with island spice marinades",
+    "experience": "12 Years at the Fire",
+    "experienceDescription": "Negombo · Colombo · Galle",
+    "expertise": [
+      "Wood-Fire Grilling",
+      "Ember-Roasted Seafood",
+      "Cinnamon-Smoked Meats",
+      "Island Spice Marinades",
+      "Seasonal Vegetables",
+      "Live-Fire Cookery"
+    ],
+    "dishes": [
+      {
+        "image": "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800&q=80&auto=format&fit=crop",
+        "imageAlt": "A richly seasoned grilled dish",
+        "label": "OPEN EMBER",
+        "price": "LKR 13,900",
+        "name": "Cinnamon-Fire Lagoon Prawns",
+        "description": "Charred prawns brushed with lime, island pepper, and a cinnamon-smoke butter."
+      },
+      {
+        "image": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=800&q=80&auto=format&fit=crop",
+        "imageAlt": "A bowl of smoky roasted vegetables",
+        "label": "GARDEN EMBERS",
+        "price": "LKR 4,100",
+        "name": "Ember-Roasted Garden Harvest",
+        "description": "Seasonal island vegetables grilled over coals with a toasted spice dressing."
+      },
+      {
+        "image": "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=800&q=80&auto=format&fit=crop",
+        "imageAlt": "Rice with herbs and spices",
+        "label": "SMOKE & GRAIN",
+        "price": "LKR 3,800",
+        "name": "Smoked Coconut Rice",
+        "description": "Coconut rice finished over the embers with herbs and crisp shallots."
+      }
+    ],
+    "quote": "The fire is never the same twice. You learn to read it, then let the ingredients speak."
+  },
+  {
+    "id": "kasun-rathnayake",
+    "name": "Kasun Rathnayake",
+    "firstName": "Kasun",
+    "lastName": "Rathnayake",
+    "role": "Pastry & Sweets",
+    "title": "Pastry Chef & Keeper of Sweet Traditions",
+    "image": "https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?w=1000&q=80&auto=format&fit=crop",
+    "since": "2018",
+    "venue": "Praneetha Pastry Hearth, Galle Fort",
+    "rating": "4.8",
+    "tastings": "720",
+    "biography": [
+      "Kasun's pastry brings the warmth of Sri Lankan sweets into a modern dining experience. He draws on familiar ingredients such as jaggery, coconut, treacle, and seasonal fruit.",
+      "Patient technique and a light touch guide his work, from gently spiced baked treats to carefully composed desserts made for the end of a hearth-side meal."
+    ],
+    "specialty": "Sri Lankan Pastry & Sweets",
+    "specialtyDescription": "Jaggery, coconut, and seasonal island fruit",
+    "experience": "10 Years of Pastry Craft",
+    "experienceDescription": "Kandy · Colombo · Galle",
+    "expertise": [
+      "Traditional Sri Lankan Sweets",
+      "Jaggery & Treacle",
+      "Coconut Pastry",
+      "Seasonal Fruit Desserts",
+      "Spiced Baking",
+      "Artisan Chocolate"
+    ],
+    "dishes": [
+      {
+        "image": "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800&q=80&auto=format&fit=crop",
+        "imageAlt": "A traditional sweet dessert",
+        "label": "SWEET HEARTH",
+        "price": "LKR 2,800",
+        "name": "Warm Jaggery & Coconut Pudding",
+        "description": "A gently spiced coconut pudding finished with rich island kithul treacle."
+      },
+      {
+        "image": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=800&q=80&auto=format&fit=crop",
+        "imageAlt": "A golden baked dessert",
+        "label": "SEASONAL FRUIT",
+        "price": "LKR 3,200",
+        "name": "Cinnamon-Baked Island Fruit",
+        "description": "Seasonal fruit baked with cinnamon and served with coconut cream."
+      },
+      {
+        "image": "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=800&q=80&auto=format&fit=crop",
+        "imageAlt": "A plated dessert with coconut",
+        "label": "AFTER THE EMBERS",
+        "price": "LKR 2,600",
+        "name": "Coconut & Cardamom Shortbread",
+        "description": "Buttery shortbread with toasted coconut and fragrant cardamom."
+      }
+    ],
+    "quote": "The sweetest memories often begin with the simplest island ingredients."
+  },
+  {
+    "id": "nimal-perera",
+    "name": "Nimal Perera",
+    "firstName": "Nimal",
+    "lastName": "Perera",
+    "role": "Spice Sommelier",
+    "title": "Spice Sommelier & Keeper of the Island Pantry",
+    "image": "https://images.unsplash.com/photo-1607631568010-a87245c0daf8?w=1000&q=80&auto=format&fit=crop",
+    "since": "2012",
+    "venue": "Praneetha Spice Hearth, Galle Fort",
+    "rating": "4.9",
+    "tastings": "1,050",
+    "biography": [
+      "Nimal explores Sri Lanka through its spices, from the bright heat of black pepper to the deep fragrance of toasted cinnamon. He selects and blends each spice to complement the ingredients around it.",
+      "Working closely with growers and the kitchen team, he celebrates regional spice traditions and helps guests discover the small details that make each dish distinct."
+    ],
+    "specialty": "Ceylon Spice Blending",
+    "specialtyDescription": "Small-batch spice blends sourced from island growers",
+    "experience": "17 Years with Island Spices",
+    "experienceDescription": "Matale · Kandy · Colombo · Galle",
+    "expertise": [
+      "Ceylon Cinnamon",
+      "Traditional Curry Powders",
+      "Pepper & Cardamom",
+      "Spice Pairing",
+      "Small-Batch Blending",
+      "Island Grower Sourcing"
+    ],
+    "dishes": [
+      {
+        "image": "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800&q=80&auto=format&fit=crop",
+        "imageAlt": "A dish seasoned with island spices",
+        "label": "SPICE ROUTE",
+        "price": "LKR 9,800",
+        "name": "Cinnamon & Pepper Braised Chicken",
+        "description": "Tender chicken braised with Ceylon cinnamon, black pepper, and toasted aromatics."
+      },
+      {
+        "image": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=800&q=80&auto=format&fit=crop",
+        "imageAlt": "A curry made with fragrant spice",
+        "label": "MATALE HARVEST",
+        "price": "LKR 4,600",
+        "name": "Matale Garden Aubergine",
+        "description": "Aubergine cooked slowly with a hand-ground island curry blend and coconut."
+      },
+      {
+        "image": "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=800&q=80&auto=format&fit=crop",
+        "imageAlt": "Rice finished with toasted spices",
+        "label": "AROMATIC GRAIN",
+        "price": "LKR 3,400",
+        "name": "Cardamom & Curry Leaf Rice",
+        "description": "Fragrant rice with toasted cardamom, curry leaves, and cashews."
+      }
+    ],
+    "quote": "Every spice has a story of place, weather, and hands. A blend is how we let those stories meet."
+  }
+]
