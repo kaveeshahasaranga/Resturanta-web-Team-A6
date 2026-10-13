@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, ShoppingBag, Loader2 } from 'lucide-react';
 import { menuApi } from '../../services/api.js';
+import { MOCK_MENU_ITEMS } from '../../data/mockMenu.js';
 import { useCart } from '../../context/CartContext.jsx';
 import Navbar from '../../components/layout/Navbar.jsx';
 import Footer from '../../components/layout/Footer.jsx';
@@ -26,9 +27,23 @@ export default function MenuItemDetailPage() {
 
   useEffect(() => {
     setLoading(true);
+    setError(null);
+
     menuApi.getById(id)
-      .then(res => setItem(res.data))
-      .catch(err => setError(err.message))
+      .then(res => {
+        // Backend may return { data: {...} } or the object directly
+        const found = res?.data ?? res;
+        setItem(found);
+      })
+      .catch(() => {
+        // Backend offline — look up item in local mock data by ID
+        const mock = MOCK_MENU_ITEMS.find(m => m.id === id);
+        if (mock) {
+          setItem(mock);
+        } else {
+          setError('Item not found.');
+        }
+      })
       .finally(() => setLoading(false));
   }, [id]);
 
