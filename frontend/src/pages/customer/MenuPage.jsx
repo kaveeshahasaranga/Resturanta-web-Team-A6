@@ -32,9 +32,7 @@ function SommelierPairing() {
                       text-fuchsiusOrange mb-2">
           THE SOMMELIER'S ARCHIVE
         </p>
-        <h3 className="font-serif text-[22px] font-semibold text-fuchsiusWhite mb-2">
-          Grand Cru Companion Flight
-        </h3>
+        >
         <p className="text-gray-500 text-[12px] leading-relaxed max-w-lg">
           Six cellar vintages curated specifically to elevate the charcoal-fired notes of
           tonight's tasting sequence. Enquire for rare bottle acquisition.
