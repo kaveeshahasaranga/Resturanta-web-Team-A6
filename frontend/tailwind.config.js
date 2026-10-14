@@ -7,35 +7,6 @@ export default {
   theme: {
     extend: {
       colors: {
-        // ─── FUCHSIUS Brand Palette ─────────────────────────────
-        fuchsiusBlack:  '#000000',
-        fuchsiusOrange: '#ec6f00',
-        fuchsiusWhite:  '#ffffff',
-
-        // ─── Derived shades for flexibility ─────────────────────
-        orange: {
-          50:  '#fff7ed',
-          100: '#ffedd5',
-          200: '#fed7aa',
-          300: '#fdba74',
-          400: '#fb923c',
-          500: '#f97316',
-          600: '#ea6000',  // close to brand orange
-          700: '#ec6f00',  // === fuchsiusOrange
-          800: '#9a3412',
-          900: '#7c2d12',
-          950: '#431407',
-        },
-      },
-      fontFamily: {
-        sans:      ['Inter', 'system-ui', 'sans-serif'],
-        serif:     ['"Cormorant Garamond"', 'Playfair Display', 'Georgia', 'serif'],
-        cormorant: ['"Cormorant Garamond"', 'serif'],
-        cinzel:    ['Cinzel', 'serif'],
-        playfair:  ['"Playfair Display"', 'serif'],
-        mono:      ['JetBrains Mono', 'monospace'],
-      },
-      colors: {
         praneetha: {
           bg: '#0a0a0c',
           card: '#141416',
@@ -67,6 +38,14 @@ export default {
           900: '#7c2d12',
           950: '#431407',
         },
+      },
+      fontFamily: {
+        sans:      ['Inter', 'system-ui', 'sans-serif'],
+        serif:     ['"Cormorant Garamond"', 'Playfair Display', 'Georgia', 'serif'],
+        cormorant: ['"Cormorant Garamond"', 'serif'],
+        cinzel:    ['Cinzel', 'serif'],
+        playfair:  ['"Playfair Display"', 'serif'],
+        mono:      ['JetBrains Mono', 'monospace'],
       },
       backgroundImage: {
         'gradient-orange': 'linear-gradient(135deg, #ec6f00 0%, #f97316 100%)',
