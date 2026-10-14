@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Check, ShieldAlert } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function SignInAdminCard({ onSwitchToCustomer, onSwitchToForgotPassword }) {
-  const [adminEmail, setAdminEmail] = useState('admin@praneetha.com');
-  const [password, setPassword] = useState('adminMaster2026');
+  const navigate = useNavigate();
+  const [adminEmail, setAdminEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -11,6 +13,7 @@ export default function SignInAdminCard({ onSwitchToCustomer, onSwitchToForgotPa
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!adminEmail || !password) return;
     setLoading(true);
     setToast(null);
 
@@ -20,6 +23,9 @@ export default function SignInAdminCard({ onSwitchToCustomer, onSwitchToForgotPa
         type: 'success',
         message: 'Admin authorization granted. Loading PRANEETHA operations suite...',
       });
+      setTimeout(() => {
+        navigate('/admin');
+      }, 700);
     }, 900);
   };
 
@@ -71,7 +77,7 @@ export default function SignInAdminCard({ onSwitchToCustomer, onSwitchToForgotPa
             type="email"
             value={adminEmail}
             onChange={(e) => setAdminEmail(e.target.value)}
-            placeholder="admin@praneetha.com"
+            placeholder="Enter admin email address"
             required
             className="w-full praneetha-input font-mono text-xs sm:text-sm"
           />

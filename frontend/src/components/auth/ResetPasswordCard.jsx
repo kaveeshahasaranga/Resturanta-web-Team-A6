@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Eye, EyeOff, Check, ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 export default function ResetPasswordCard({ onSwitchToLogin }) {
-  const [newPassword, setNewPassword] = useState('dining2026!');
-  const [confirmPassword, setConfirmPassword] = useState('dining2026!');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
