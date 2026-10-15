@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Check, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function RegisterCard({ onSwitchToLogin }) {
-  const [fullName, setFullName] = useState('Eleanor Vance');
-  const [email, setEmail] = useState('guest@praneetha.com');
-  const [password, setPassword] = useState('dining2026');
-  const [confirmPassword, setConfirmPassword] = useState('dining2026');
+  const navigate = useNavigate();
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [subscribeNewsletter, setSubscribeNewsletter] = useState(false);
@@ -39,12 +41,31 @@ export default function RegisterCard({ onSwitchToLogin }) {
     setLoading(true);
     setToast(null);
 
+    // Save patron credentials to profile
+    try {
+      localStorage.setItem(
+        'praneetha_patron_profile',
+        JSON.stringify({
+          name: fullName || 'Patron Member',
+          email: email,
+          phone: '077 123 4567',
+          city: 'Colombo',
+          address: '45 Temple Road, Colombo 05',
+        })
+      );
+    } catch (err) {
+      // ignore
+    }
+
     setTimeout(() => {
       setLoading(false);
       setToast({
         type: 'success',
         message: 'Account created successfully! Welcome to PRANEETHA Patron Society.',
       });
+      setTimeout(() => {
+        navigate('/profile');
+      }, 800);
     }, 900);
   };
 
@@ -89,7 +110,7 @@ export default function RegisterCard({ onSwitchToLogin }) {
             type="text"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            placeholder="Eleanor Vance"
+            placeholder="Enter your full name"
             required
             className="w-full praneetha-input"
           />
@@ -104,7 +125,7 @@ export default function RegisterCard({ onSwitchToLogin }) {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="guest@praneetha.com"
+            placeholder="Enter your email address"
             required
             className="w-full praneetha-input"
           />

@@ -9,6 +9,7 @@ import CartPage      from './pages/customer/CartPage.jsx';
 import CheckoutPage  from './pages/customer/CheckoutPage.jsx';
 import OrderConfirmationPage from './pages/customer/OrderConfirmationPage.jsx';
 import ContactPage   from './pages/customer/ContactPage.jsx';
+import CustomerProfilePage from './pages/customer/CustomerProfilePage.jsx';
 
 // ─── Auth Pages ──────────────────────────────────────────────────────────────
 import LoginPage          from './pages/auth/LoginPage.jsx';
@@ -37,6 +38,9 @@ export default function App() {
           <Route path="/checkout"       element={<CheckoutPage />} />
           <Route path="/order-confirmation/:orderId" element={<OrderConfirmationPage />} />
           <Route path="/contact"        element={<ContactPage />} />
+          <Route path="/profile"        element={<CustomerProfilePage />} />
+          <Route path="/profile/:tab"   element={<CustomerProfilePage />} />
+          <Route path="/customer/profile" element={<CustomerProfilePage />} />
 
           {/* ── Auth Routes ── */}
           <Route path="/login"           element={<LoginPage />} />
