@@ -1,22 +1,21 @@
 import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
 import {
-  Flame, LayoutDashboard, Tag, UtensilsCrossed,
-  ShoppingBag, FileText, Settings, LogOut, Bell, ExternalLink
+  Flame, LayoutDashboard, UtensilsCrossed, Home,
+  ShoppingBag, Settings, LogOut, Bell, ExternalLink,
+  BookOpen, ChefHat, MessageSquare
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
 import Footer from '../../components/layout/Footer.jsx';
 
 // ─── Sidebar nav definition ───────────────────────────────────────────────────
 const NAV_ITEMS = [
-  { to: '/admin',         label: 'Dashboard',    icon: LayoutDashboard, end: true },
-  { to: '/admin/menu',    label: 'Menu Items',   icon: UtensilsCrossed },
-  { to: '/admin/orders',  label: 'Orders',       icon: ShoppingBag },
-  { to: '/admin/chefs',   label: 'Chefs',        icon: FileText },
-  { to: '/admin/contact', label: 'Messages',     icon: FileText },
-];
-
-const BOTTOM_ITEMS = [
-  { to: '/admin/settings', label: 'Settings', icon: Settings },
+  { to: '/admin',              label: 'Dashboard',     icon: LayoutDashboard,  end: true },
+  { to: '/admin/menu',         label: 'Menu Items',    icon: UtensilsCrossed },
+  { to: '/admin/orders',       label: 'Orders',        icon: ShoppingBag },
+  { to: '/admin/home-content', label: 'Home Content',  icon: Home },
+  { to: '/admin/about-content',label: 'About Content', icon: BookOpen },
+  { to: '/admin/chefs',        label: 'Chefs',         icon: ChefHat },
+  { to: '/admin/contact',      label: 'Messages',      icon: MessageSquare },
 ];
 
 // ─── Top Admin Bar ────────────────────────────────────────────────────────────
@@ -117,11 +116,11 @@ function AdminSidebar({ onLogout }) {
             to={to}
             end={end}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 text-[12px] font-medium
-               transition-all duration-200 relative
+              `flex items-center gap-3 px-3 py-2.5 text-[12px] font-semibold
+               transition-all duration-200 rounded-sm
                ${isActive
-                 ? 'text-fuchsiusOrange bg-fuchsiusOrange/8 border-l-2 border-fuchsiusOrange pl-[10px]'
-                 : 'text-gray-500 hover:text-gray-200 hover:bg-white/4 border-l-2 border-transparent'
+                 ? 'bg-fuchsiusOrange text-black'
+                 : 'text-gray-400 hover:text-white hover:bg-white/[0.05]'
                }`
             }
           >
@@ -136,9 +135,9 @@ function AdminSidebar({ onLogout }) {
         <NavLink
           to="/admin/settings"
           className={({ isActive }) =>
-            `flex items-center gap-3 px-3 py-2.5 text-[12px] font-medium
-             transition-colors duration-200
-             ${isActive ? 'text-fuchsiusOrange' : 'text-gray-600 hover:text-gray-300'}`
+            `flex items-center gap-3 px-3 py-2.5 text-[12px] font-semibold
+             transition-colors duration-200 rounded-sm
+             ${isActive ? 'bg-fuchsiusOrange text-black' : 'text-gray-600 hover:text-gray-300'}`
           }
         >
           <Settings className="w-4 h-4 shrink-0" />
@@ -148,7 +147,7 @@ function AdminSidebar({ onLogout }) {
         <button
           onClick={onLogout}
           className="w-full flex items-center gap-3 px-3 py-2.5 text-[12px]
-                     font-medium text-gray-600 hover:text-red-400
+                     font-semibold text-gray-600 hover:text-red-400
                      transition-colors duration-200"
         >
           <LogOut className="w-4 h-4 shrink-0" />
