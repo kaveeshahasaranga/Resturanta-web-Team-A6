@@ -7,6 +7,7 @@ import HomePage      from './pages/customer/HomePage.jsx';
 import MenuPage      from './pages/customer/MenuPage.jsx';
 import CartPage      from './pages/customer/CartPage.jsx';
 import CheckoutPage  from './pages/customer/CheckoutPage.jsx';
+import OrderConfirmationPage from './pages/customer/OrderConfirmationPage.jsx';
 import ContactPage   from './pages/customer/ContactPage.jsx';
 import CustomerProfilePage from './pages/customer/CustomerProfilePage.jsx';
 
@@ -35,6 +36,7 @@ export default function App() {
           <Route path="/menu"           element={<MenuPage />} />
           <Route path="/cart"           element={<CartPage />} />
           <Route path="/checkout"       element={<CheckoutPage />} />
+          <Route path="/order-confirmation/:orderId" element={<OrderConfirmationPage />} />
           <Route path="/contact"        element={<ContactPage />} />
           <Route path="/profile"        element={<CustomerProfilePage />} />
           <Route path="/profile/:tab"   element={<CustomerProfilePage />} />
