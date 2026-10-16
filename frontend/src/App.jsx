@@ -22,13 +22,15 @@ import ForgotPasswordPage from './pages/auth/ForgotPasswordPage.jsx';
 import ResetPasswordPage  from './pages/auth/ResetPasswordPage.jsx';
 
 // ─── Admin Pages ─────────────────────────────────────────────────────────────
-import AdminLayout      from './pages/admin/AdminLayout.jsx';
-import AdminDashboard   from './pages/admin/AdminDashboard.jsx';
-import AdminMenuPage    from './pages/admin/AdminMenuPage.jsx';
-import AdminMenuForm    from './pages/admin/AdminMenuForm.jsx';
-import AdminOrdersPage  from './pages/admin/AdminOrdersPage.jsx';
-import AdminChefsPage   from './pages/admin/AdminChefsPage.jsx';
-import AdminContactPage from './pages/admin/AdminContactPage.jsx';
+import AdminLayout                from './pages/admin/AdminLayout.jsx';
+import AdminDashboard             from './pages/admin/AdminDashboard.jsx';
+import AdminHomeContentManagement from './pages/admin/AdminHomeContentManagement.jsx';
+import AdminAboutContentManagement from './pages/admin/AdminAboutContentManagement.jsx';
+import AdminMenuPage              from './pages/admin/AdminMenuPage.jsx';
+import AdminMenuForm              from './pages/admin/AdminMenuForm.jsx';
+import AdminOrdersPage            from './pages/admin/AdminOrdersPage.jsx';
+import AdminChefsPage             from './pages/admin/AdminChefsPage.jsx';
+import AdminContactPage           from './pages/admin/AdminContactPage.jsx';
 
 export default function App() {
   return (
@@ -60,6 +62,10 @@ export default function App() {
           {/* ── Admin Routes (nested under sidebar layout) ── */}
           <Route path="/admin" element={<AdminLayout />}>
             <Route index                element={<AdminDashboard />} />
+            <Route path="home"          element={<AdminHomeContentManagement />} />
+            <Route path="home-content"  element={<AdminHomeContentManagement />} />
+            <Route path="about"         element={<AdminAboutContentManagement />} />
+            <Route path="about-content" element={<AdminAboutContentManagement />} />
             <Route path="menu"          element={<AdminMenuPage />} />
             <Route path="menu/new"      element={<AdminMenuForm />} />
             <Route path="menu/edit/:id" element={<AdminMenuForm />} />
