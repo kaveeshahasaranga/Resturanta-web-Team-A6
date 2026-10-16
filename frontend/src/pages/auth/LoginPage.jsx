@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import AuthLayout from '../../components/auth/AuthLayout.jsx';
 import SignInCustomerCard from '../../components/auth/SignInCustomerCard.jsx';
 import SignInAdminCard from '../../components/auth/SignInAdminCard.jsx';
@@ -7,13 +7,16 @@ import SignInAdminCard from '../../components/auth/SignInAdminCard.jsx';
 export default function LoginPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const roleParam = searchParams.get('role');
   
-  const [isAdmin, setIsAdmin] = useState(roleParam === 'admin');
+  const [isAdmin, setIsAdmin] = useState(
+    roleParam === 'admin' || location.pathname === '/admin-login'
+  );
 
   useEffect(() => {
-    setIsAdmin(roleParam === 'admin');
-  }, [roleParam]);
+    setIsAdmin(roleParam === 'admin' || location.pathname === '/admin-login');
+  }, [roleParam, location.pathname]);
 
   const handleRoleChange = (adminMode) => {
     setIsAdmin(adminMode);

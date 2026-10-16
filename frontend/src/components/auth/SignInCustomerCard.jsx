@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Check, AlertCircle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 export default function SignInCustomerCard({ onSwitchToAdmin, onSwitchToRegister, onSwitchToForgotPassword }) {
   const navigate = useNavigate();
+  const { loginAsCustomer } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -35,6 +37,7 @@ export default function SignInCustomerCard({ onSwitchToAdmin, onSwitchToRegister
     }
 
     setTimeout(() => {
+      loginAsCustomer(email);
       setLoading(false);
       setToast({
         type: 'success',

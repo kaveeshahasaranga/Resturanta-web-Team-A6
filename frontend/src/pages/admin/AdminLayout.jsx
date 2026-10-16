@@ -1,4 +1,4 @@
-import { NavLink, Outlet, Link } from 'react-router-dom';
+import { NavLink, Outlet, Link, useNavigate } from 'react-router-dom';
 import { Bell, ChefHat, ClipboardList, ExternalLink, LayoutDashboard, LogOut, Mail, Menu as MenuIcon, UtensilsCrossed } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
 import Footer from '../../components/layout/Footer.jsx';
@@ -13,6 +13,13 @@ const navItems = [
 
 export default function AdminLayout() {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/admin-login', { replace: true });
+  };
+
   return (
     <div className="min-h-screen bg-[#0b0a09] text-stone-100 lg:flex">
       <aside className="admin-sidebar flex w-full shrink-0 flex-col border-b border-white/[0.07] lg:fixed lg:inset-y-0 lg:w-56 lg:border-b-0 lg:border-r">
@@ -25,7 +32,7 @@ export default function AdminLayout() {
           {navItems.map(({ to, label, icon: Icon, end }) => <NavLink key={to} to={to} end={end} className={({ isActive }) => `flex shrink-0 items-center gap-3 border px-3 py-2.5 text-xs transition ${isActive ? 'border-orange-500/20 bg-orange-500 text-white shadow-[0_4px_16px_rgba(234,88,12,.14)]' : 'border-transparent text-stone-400 hover:border-white/[0.06] hover:bg-white/[0.03] hover:text-white'}`}><Icon size={15} />{label}</NavLink>)}
         </nav>
         <div className="mt-auto hidden space-y-1 border-t border-white/[0.07] p-3 lg:block">
-          <button onClick={logout} className="flex w-full items-center gap-3 px-3 py-2.5 text-left text-xs text-stone-500 transition hover:text-orange-300"><LogOut size={14} /> Log out</button>
+          <button onClick={handleLogout} className="flex w-full items-center gap-3 px-3 py-2.5 text-left text-xs text-stone-500 transition hover:text-orange-300"><LogOut size={14} /> Log out</button>
         </div>
       </aside>
 
@@ -36,7 +43,7 @@ export default function AdminLayout() {
             <Link to="/" className="hidden items-center gap-1.5 border border-white/[0.09] px-3 py-2 text-[10px] text-stone-300 transition hover:border-orange-400/40 hover:text-orange-300 sm:flex">Preview home site <ExternalLink size={12} /></Link>
             <Link to="/admin/contact" aria-label="Open messages" title="Open messages" className="relative border border-white/[0.09] p-2 text-stone-400 hover:text-orange-300"><Bell size={14} /></Link>
             <div className="hidden text-right sm:block"><p className="text-[10px] text-stone-200">{user?.name || 'Hearth Admin'}</p><p className="text-[8px] uppercase tracking-[0.16em] text-stone-500">Administrator</p></div>
-            <button onClick={logout} aria-label="Log out" className="p-2 text-stone-500 hover:text-orange-300 lg:hidden"><LogOut size={15} /></button>
+            <button onClick={handleLogout} aria-label="Log out" className="p-2 text-stone-500 hover:text-orange-300 lg:hidden"><LogOut size={15} /></button>
           </div>
         </header>
 

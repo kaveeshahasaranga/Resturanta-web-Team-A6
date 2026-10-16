@@ -20,9 +20,35 @@ export function AuthProvider({ children }) {
   const login = useCallback(async (email, password) => {
     const data = await api.post('/auth/login', { email, password });
     localStorage.setItem('fuchsius_token', data.data.token);
-    localStorage.setItem('fuchsius_user',  JSON.stringify(data.data.user));
+    localStorage.setItem('fuchsius_user', JSON.stringify(data.data.user));
     setUser(data.data.user);
     return data.data.user;
+  }, []);
+
+  const loginAsAdmin = useCallback((email) => {
+    const adminUser = {
+      id: 'mock-admin',
+      name: email.split('@')[0] || 'Hearth Admin',
+      email,
+      role: 'ADMIN',
+    };
+    localStorage.setItem('fuchsius_token', 'mock-admin-session');
+    localStorage.setItem('fuchsius_user', JSON.stringify(adminUser));
+    setUser(adminUser);
+    return adminUser;
+  }, []);
+
+  const loginAsCustomer = useCallback((email) => {
+    const customerUser = {
+      id: 'mock-customer',
+      name: email.split('@')[0] || 'Patron Member',
+      email,
+      role: 'CUSTOMER',
+    };
+    localStorage.setItem('fuchsius_token', 'mock-customer-session');
+    localStorage.setItem('fuchsius_user', JSON.stringify(customerUser));
+    setUser(customerUser);
+    return customerUser;
   }, []);
 
   const register = useCallback(async (name, email, password) => {
@@ -42,7 +68,7 @@ export function AuthProvider({ children }) {
   const isAdmin = user?.role === 'ADMIN';
 
   return (
-    <AuthContext.Provider value={{ user, loading, isAdmin, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, isAdmin, login, loginAsAdmin, loginAsCustomer, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
