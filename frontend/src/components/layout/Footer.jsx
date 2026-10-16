@@ -67,27 +67,27 @@ export default function Footer() {
             <ul className="space-y-2.5 text-xs text-neutral-400">
               <li>
                 <Link to="/" className="hover:text-white transition-colors">
-                  Home & Philosophy
+                  Home
                 </Link>
               </li>
               <li>
                 <Link to="/menu" className="hover:text-white transition-colors">
-                  Culinary Heritage
+                  Menu
                 </Link>
               </li>
               <li>
-                <Link to="/menu" className="hover:text-white transition-colors">
-                  Hearth Masters
+                <Link to="/chefs" className="hover:text-white transition-colors">
+                  Chefs
                 </Link>
               </li>
               <li>
-                <Link to="/menu" className="hover:text-white transition-colors">
-                  Clay Pot Degustation
+                <Link to="/cart" className="hover:text-white transition-colors">
+                  Cart
                 </Link>
               </li>
               <li>
                 <Link to="/contact" className="hover:text-white transition-colors">
-                  Private Hearth Booking
+                  Contact
                 </Link>
               </li>
             </ul>
