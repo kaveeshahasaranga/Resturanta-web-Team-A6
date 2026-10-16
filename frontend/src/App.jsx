@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext.jsx';
 
 // ─── Customer Pages ──────────────────────────────────────────────────────────
 import HomePage      from './pages/customer/HomePage.jsx';
+import AboutPage      from './pages/customer/AboutPage.jsx';
 import MenuPage      from './pages/customer/MenuPage.jsx';
 import CartPage      from './pages/customer/CartPage.jsx';
 import CheckoutPage  from './pages/customer/CheckoutPage.jsx';
@@ -33,6 +34,7 @@ export default function App() {
         <Routes>
           {/* ── Customer Routes ── */}
           <Route path="/"               element={<HomePage />} />
+          <Route path="/about"          element={<AboutPage />} />
           <Route path="/menu"           element={<MenuPage />} />
           <Route path="/cart"           element={<CartPage />} />
           <Route path="/checkout"       element={<CheckoutPage />} />
