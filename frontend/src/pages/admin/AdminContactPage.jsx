@@ -2,14 +2,44 @@ import { useEffect, useState } from 'react';
 import { Loader2, Trash2, Mail, CheckCheck } from 'lucide-react';
 import { contactApi } from '../../services/api.js';
 
+const MOCK_MESSAGES = [
+  {
+    id: 'msg-1',
+    name: 'Sithumi Rajapaksa',
+    email: 'sithumi@example.com',
+    message: 'I would like to make a reservation for 6 people this Saturday evening. Do you have availability for the Nightfire Degustation menu?',
+    isRead: false,
+    createdAt: new Date(Date.now() - 30 * 60000).toISOString(),
+  },
+  {
+    id: 'msg-2',
+    name: 'Ravindu Mendis',
+    email: 'ravindu@example.com',
+    message: 'Could you please let me know if you can accommodate a gluten-free dietary requirement for the tasting menu? We are visiting from Kandy next weekend.',
+    isRead: false,
+    createdAt: new Date(Date.now() - 2 * 3600000).toISOString(),
+  },
+  {
+    id: 'msg-3',
+    name: 'Chamari Wickramasinghe',
+    email: 'chamari@example.com',
+    message: 'Wonderful experience last week! The Wagyu Tenderloin was absolutely outstanding. We will definitely be back for the Clay Pot Degustation next time.',
+    isRead: true,
+    createdAt: new Date(Date.now() - 24 * 3600000).toISOString(),
+  },
+];
+
 export default function AdminContactPage() {
   const [messages, setMessages] = useState([]);
   const [loading,  setLoading]  = useState(true);
 
   useEffect(() => {
     contactApi.getAll()
-      .then(res => setMessages(res.data))
-      .catch(console.error)
+      .then(res => {
+        const list = Array.isArray(res) ? res : (res.data ?? res);
+        setMessages(list.length > 0 ? list : MOCK_MESSAGES);
+      })
+      .catch(() => setMessages(MOCK_MESSAGES))
       .finally(() => setLoading(false));
   }, []);
 

@@ -2,14 +2,44 @@ import { useEffect, useState } from 'react';
 import { Loader2, Trash2, ChefHat } from 'lucide-react';
 import { chefApi } from '../../services/api.js';
 
+const MOCK_CHEFS = [
+  {
+    id: 'chef-1',
+    name: 'Chef Nalaka Perera',
+    title: 'Executive Head Chef',
+    bio: 'Over 18 years of mastery in traditional Sri Lankan clay-pot cuisine, charcoal hearth techniques, and modern artisanal gastronomy.',
+    specialty: 'Charcoal Hearth & Black Pork Curry',
+    image: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=200&q=80',
+  },
+  {
+    id: 'chef-2',
+    name: 'Chef Amaya Jayawardena',
+    title: 'Pastry & Patisserie Chef',
+    bio: 'Trained in Paris and Colombo, specialising in fire-kissed desserts, cacao artistry, and Ceylon spice-infused confections.',
+    specialty: 'Valrhona Chocolate & Ceylon Spice Desserts',
+    image: 'https://images.unsplash.com/photo-1607631568010-a87245c0daf8?w=200&q=80',
+  },
+  {
+    id: 'chef-3',
+    name: 'Chef Dilan Samarawickrama',
+    title: 'Seafood & Raw Bar Specialist',
+    bio: 'Expert in coastal Sri Lankan seafood traditions — from Jaffna crab curry to modern crudo presentations with Ceylon spice oils.',
+    specialty: 'Raw Bar, Caviar & Coastal Seafood',
+    image: 'https://images.unsplash.com/photo-1581299894007-aaa50297cf16?w=200&q=80',
+  },
+];
+
 export default function AdminChefsPage() {
   const [chefs,   setChefs]   = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     chefApi.getAll()
-      .then(res => setChefs(res.data))
-      .catch(console.error)
+      .then(res => {
+        const list = Array.isArray(res) ? res : (res.data ?? res);
+        setChefs(list.length > 0 ? list : MOCK_CHEFS);
+      })
+      .catch(() => setChefs(MOCK_CHEFS))
       .finally(() => setLoading(false));
   }, []);
 

@@ -52,9 +52,9 @@ export default function AdminDashboard() {
         </div>
       ) : stats ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
-          <StatCard icon={ShoppingBag}    label="Total Orders"    value={stats.totalOrders}    />
-          <StatCard icon={DollarSign}     label="Total Revenue"   value={`$${parseFloat(stats.totalRevenue).toFixed(2)}`} color="text-green-400" />
-          <StatCard icon={TrendingUp}     label="Pending Orders"  value={stats.pendingOrders}  color="text-yellow-400" />
+          <StatCard icon={ShoppingBag}     label="Total Orders"   value={stats.totalOrders}    />
+          <StatCard icon={DollarSign}      label="Total Revenue"  value={`Rs ${parseFloat(stats.totalRevenue).toFixed(2)}`} color="text-green-400" />
+          <StatCard icon={TrendingUp}      label="Pending Orders" value={stats.pendingOrders}  color="text-yellow-400" />
           <StatCard icon={UtensilsCrossed} label="Menu Items"     value={stats.totalMenuItems} color="text-blue-400" />
         </div>
       ) : (
