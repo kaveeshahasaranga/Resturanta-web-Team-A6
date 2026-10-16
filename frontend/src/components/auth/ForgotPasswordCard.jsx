@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Clock, Check, ArrowRight, Mail } from 'lucide-react';
 
 export default function ForgotPasswordCard({ onSwitchToLogin, onSwitchToResetPassword }) {
-  const [email, setEmail] = useState('guest@praneetha.com');
+  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [secondsRemaining, setSecondsRemaining] = useState(15 * 60); // 15 mins
@@ -81,7 +81,7 @@ export default function ForgotPasswordCard({ onSwitchToLogin, onSwitchToResetPas
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="guest@praneetha.com"
+              placeholder="Enter your registered email address"
               required
               className="w-full praneetha-input pr-10"
             />

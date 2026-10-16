@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Check, AlertCircle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function SignInCustomerCard({ onSwitchToAdmin, onSwitchToRegister, onSwitchToForgotPassword }) {
-  const [email, setEmail] = useState('guest@praneetha.com');
-  const [password, setPassword] = useState('dining2026');
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -12,8 +13,26 @@ export default function SignInCustomerCard({ onSwitchToAdmin, onSwitchToRegister
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!email || !password) return;
     setLoading(true);
     setToast(null);
+
+    // Save patron credentials to profile
+    try {
+      const existing = localStorage.getItem('praneetha_patron_profile');
+      const profileObj = existing ? JSON.parse(existing) : {};
+      const derivedName = email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+      localStorage.setItem(
+        'praneetha_patron_profile',
+        JSON.stringify({
+          ...profileObj,
+          email: email,
+          name: profileObj.name || derivedName || 'Patron Member',
+        })
+      );
+    } catch (err) {
+      // ignore
+    }
 
     setTimeout(() => {
       setLoading(false);
@@ -21,6 +40,9 @@ export default function SignInCustomerCard({ onSwitchToAdmin, onSwitchToRegister
         type: 'success',
         message: 'Welcome back to PRANEETHA. Curating your private dining table...',
       });
+      setTimeout(() => {
+        navigate('/profile');
+      }, 700);
     }, 900);
   };
 
@@ -72,7 +94,7 @@ export default function SignInCustomerCard({ onSwitchToAdmin, onSwitchToRegister
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="guest@praneetha.com"
+            placeholder="Enter your email address"
             required
             className="w-full praneetha-input"
           />

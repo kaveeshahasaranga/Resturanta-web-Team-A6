@@ -32,7 +32,7 @@ router.get('/:id', async (req, res, next) => {
 // Body: { customerName, customerEmail, customerPhone?, deliveryAddress?, notes?, items: [{menuItemId, quantity}] }
 router.post('/', async (req, res, next) => {
   try {
-    const { customerName, customerEmail, customerPhone, deliveryAddress, notes, items, userId } = req.body;
+    const { customerName, customerEmail, customerPhone, deliveryAddress, notes, items, userId, voucherCode } = req.body;
     if (!customerName || !customerEmail || !items?.length) {
       return res.status(400).json({ success: false, message: 'customerName, customerEmail, and items are required' });
     }
@@ -54,7 +54,9 @@ router.post('/', async (req, res, next) => {
       };
     });
 
-    const total = orderItems.reduce((sum, i) => sum + i.totalPrice, 0);
+    const subtotal = orderItems.reduce((sum, i) => sum + i.totalPrice, 0);
+    const normalizedVoucher = typeof voucherCode === 'string' ? voucherCode.trim().toUpperCase() : '';
+    const total = normalizedVoucher === 'HEARTH10' ? subtotal * 0.9 : subtotal;
 
     const order = await req.prisma.order.create({
       data: {
