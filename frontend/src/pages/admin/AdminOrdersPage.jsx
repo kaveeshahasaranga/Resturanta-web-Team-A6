@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ChefHat, ClipboardList, Clock3, Eye, Flame, RefreshCw, Search, Truck, X } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { ChefHat, ClipboardList, Clock3, Eye, Flame, RefreshCw, Search, Truck } from 'lucide-react';
 import { createDemoOrders } from '../../data/demoOrders.js';
 
 const statuses = ['PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'DELIVERED', 'CANCELLED'];
@@ -30,19 +30,19 @@ const statusTone = {
   CANCELLED: 'border-red-400/25 bg-red-400/[0.08] text-red-300',
 };
 
-function StatusPill({ status }) {
-  return <span className={`inline-flex items-center gap-1.5 border px-2 py-1 text-[9px] capitalize ${statusTone[status] || statusTone.PENDING}`}><span className="h-1.5 w-1.5 rounded-full bg-current" />{humanStatus(status)}</span>;
-}
-
 function Metric({ label, value, detail, icon: Icon, color }) {
   return <article className="order-metric border border-white/[0.07] bg-[#13110f] p-3.5 sm:p-4"><p className="text-[9px] text-stone-500">{label}</p><div className="mt-2 flex items-center justify-between gap-2"><span className={`font-serif text-lg sm:text-xl ${color}`}>{value}</span><Icon size={14} className={color} /></div><p className="mt-1 text-[8px] text-stone-600">{detail}</p></article>;
 }
 
 export default function AdminOrdersPage() {
-  const [orders, setOrders] = useState(createDemoOrders);
+  const location = useLocation();
+  const [orders, setOrders] = useState(() => {
+    const initialOrders = createDemoOrders();
+    const updatedOrder = location.state?.updatedOrder;
+    return updatedOrder ? initialOrders.map((order) => order.id === updatedOrder.id ? updatedOrder : order) : initialOrders;
+  });
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('ALL');
-  const [selectedOrder, setSelectedOrder] = useState(null);
 
   const todayOrders = useMemo(() => orders.filter((order) => isToday(order.createdAt)), [orders]);
   const kitchenOrders = orders.filter((order) => order.status === 'PREPARING');
@@ -61,7 +61,6 @@ export default function AdminOrdersPage() {
     if (!status || status === order.status) return;
     const updated = { ...order, status };
     setOrders((current) => current.map((entry) => entry.id === order.id ? updated : entry));
-    setSelectedOrder((current) => current?.id === order.id ? updated : current);
   };
 
   return (
@@ -106,7 +105,7 @@ export default function AdminOrdersPage() {
                   <td className="px-3 py-3 text-[10px] text-amber-300">{quantity}</td>
                   <td className="px-3 py-3"><label className="sr-only" htmlFor={`status-${order.id}`}>Update order {order.id} status</label><select id={`status-${order.id}`} value={order.status} onChange={(event) => updateOrder(order, event.target.value)} className={`max-w-32 cursor-pointer appearance-none border bg-[#100f0d] px-2 py-1.5 text-[9px] capitalize outline-none ${statusTone[order.status] || statusTone.PENDING}`}>{statuses.map((status) => <option key={status} value={status} className="bg-[#151310] text-stone-200">{humanStatus(status)}</option>)}</select></td>
                   <td className="px-3 py-3 text-right text-[9px] text-stone-300">{money(order.total)}</td>
-                  <td className="px-4 py-3 text-right"><button onClick={() => setSelectedOrder(order)} className="inline-flex items-center gap-1 border border-amber-400/20 px-2 py-1.5 text-[9px] text-amber-300 transition hover:border-amber-400/50 hover:bg-amber-400/[0.05]"><Eye size={11} /> View order</button></td>
+                  <td className="px-4 py-3 text-right"><Link to={`/admin/orders/${order.id}`} state={{ order }} className="inline-flex items-center gap-1 border border-amber-400/20 px-2 py-1.5 text-[9px] text-amber-300 transition hover:border-amber-400/50 hover:bg-amber-400/[0.05]"><Eye size={11} /> View order</Link></td>
                 </tr>;
               }) : <tr><td colSpan="8" className="px-4 py-14 text-center"><ClipboardEmpty /><p className="mt-3 text-xs text-stone-300">{orders.length ? 'No orders match your search.' : 'No food orders yet.'}</p><p className="mt-1 text-[9px] text-stone-600">New checkout orders will appear here.</p></td></tr>}
             </tbody>
@@ -114,7 +113,6 @@ export default function AdminOrdersPage() {
         </div>
       </section>
 
-      {selectedOrder && <OrderDetails order={selectedOrder} onClose={() => setSelectedOrder(null)} onStatusChange={updateOrder} />}
       <style>{`.order-metric{background:linear-gradient(145deg,rgba(255,255,255,.018),transparent 60%),#13110f}`}</style>
     </div>
   );
@@ -122,17 +120,4 @@ export default function AdminOrdersPage() {
 
 function ClipboardEmpty() {
   return <div className="mx-auto flex h-10 w-10 items-center justify-center border border-white/[0.08] text-stone-600"><ClipboardList size={17} /></div>;
-}
-
-function OrderDetails({ order, onClose, onStatusChange }) {
-  const paymentNote = order.notes?.match(/Payment preference: ([^|]+)/i)?.[1]?.trim();
-  return <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-0 backdrop-blur-sm sm:items-center sm:p-5" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
-    <section role="dialog" aria-modal="true" aria-labelledby="order-details-title" className="max-h-[90vh] w-full max-w-xl overflow-y-auto border border-white/10 bg-[#14120f] p-5 shadow-2xl sm:p-6">
-      <div className="flex items-start justify-between gap-4"><div><p className="text-[9px] uppercase tracking-[0.24em] text-orange-400">Kitchen ticket · #{order.id}</p><h2 id="order-details-title" className="mt-1 font-serif text-2xl">{order.customerName}</h2><p className="mt-1 text-[10px] text-stone-500">Placed {dateLabel(order.createdAt)}</p></div><button onClick={onClose} aria-label="Close order details" className="border border-white/10 p-2 text-stone-400 hover:text-white"><X size={14} /></button></div>
-      <div className="mt-5 grid grid-cols-2 gap-3 border-y border-white/[0.07] py-4 text-[10px]"><div><p className="text-stone-600">Email</p><p className="mt-1 break-all text-stone-300">{order.customerEmail}</p></div><div><p className="text-stone-600">Phone</p><p className="mt-1 text-stone-300">{order.customerPhone || 'Not provided'}</p></div><div><p className="text-stone-600">Fulfilment</p><p className="mt-1 text-stone-300">{order.deliveryAddress ? 'Delivery' : 'Pickup'}</p></div><div><p className="text-stone-600">Payment preference</p><p className="mt-1 text-stone-300">{paymentNote || 'Not provided'}</p></div><div className="col-span-2"><p className="text-stone-600">Destination</p><p className="mt-1 text-stone-300">{order.deliveryAddress || 'Hearth counter pickup'}</p></div></div>
-      <div className="mt-5"><h3 className="font-serif text-base">Order items</h3><div className="mt-3 divide-y divide-white/[0.06]">{(order.items || []).map((item) => <div key={item.id} className="flex justify-between gap-3 py-2.5 text-[10px]"><div><p className="text-stone-200">{item.menuItem?.name || 'Menu item'}</p><p className="mt-1 text-stone-600">Qty {item.quantity} · {money(item.unitPrice)} each</p></div><span className="shrink-0 text-stone-300">{money(item.totalPrice)}</span></div>)}</div><div className="mt-3 flex justify-between border-t border-white/[0.07] pt-3 text-xs"><span className="text-stone-400">Order total</span><span className="text-amber-300">{money(order.total)}</span></div></div>
-      {order.notes && <div className="mt-4 border border-white/[0.07] bg-black/10 p-3"><p className="text-[9px] uppercase tracking-wider text-stone-600">Customer note</p><p className="mt-1 text-[10px] leading-5 text-stone-300">{order.notes.split('| Payment preference:')[0].trim() || order.notes}</p></div>}
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.07] pt-4"><StatusPill status={order.status} /><label className="flex items-center gap-2 text-[9px] text-stone-500">Update status<select value={order.status} onChange={(event) => onStatusChange(order, event.target.value)} className="border border-white/10 bg-[#0f0e0c] px-2.5 py-2 text-[10px] capitalize text-stone-200 outline-none focus:border-orange-500/50">{statuses.map((status) => <option key={status} value={status} className="bg-[#151310]">{humanStatus(status)}</option>)}</select></label></div>
-    </section>
-  </div>;
 }
