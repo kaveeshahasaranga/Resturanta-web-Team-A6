@@ -21,6 +21,7 @@ import ResetPasswordPage  from './pages/auth/ResetPasswordPage.jsx';
 
 // ─── Admin Pages ─────────────────────────────────────────────────────────────
 import AdminLayout      from './pages/admin/AdminLayout.jsx';
+import AdminHomeContentManagement from './pages/admin/AdminHomeContentManagement.jsx';
 import AdminDashboard   from './pages/admin/AdminDashboard.jsx';
 import AdminMenuPage    from './pages/admin/AdminMenuPage.jsx';
 import AdminMenuForm    from './pages/admin/AdminMenuForm.jsx';
@@ -61,6 +62,7 @@ export default function App() {
             <Route path="menu/edit/:id" element={<AdminMenuForm />} />
             <Route path="orders"        element={<AdminOrdersPage />} />
             <Route path="chefs"         element={<AdminChefsPage />} />
+            <Route path="home" element={<AdminHomeContentManagement />} />
             <Route path="contact"       element={<AdminContactPage />} />
           </Route>
         </Routes>
