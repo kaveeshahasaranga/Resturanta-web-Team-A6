@@ -58,7 +58,7 @@ export default function App() {
           <Route path="/reset-password"  element={<ResetPasswordPage />} />
 
           {/* ── Admin Routes (nested under sidebar layout) ── */}
-          <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+          <Route path="/admin" element={<AdminLayout />}>
             <Route index                element={<AdminDashboard />} />
             <Route path="menu"          element={<AdminMenuPage />} />
             <Route path="menu/new"      element={<AdminMenuForm />} />

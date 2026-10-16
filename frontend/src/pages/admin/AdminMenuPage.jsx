@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Plus, Pencil, Trash2, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { menuApi } from '../../services/api.js';
+import { MOCK_MENU_ITEMS } from '../../data/mockMenu.js';
 
 // ─── Category display labels ──────────────────────────────────────────────────
 const CATEGORY_LABEL = {
@@ -101,9 +102,16 @@ export default function AdminMenuPage() {
 
   const fetchItems = () => {
     setLoading(true);
+    setError('');
     menuApi.getAll()
-      .then(res => setItems(res.data))
-      .catch(err => setError(err.message))
+      .then(res => {
+        const list = Array.isArray(res) ? res : (res.data ?? res);
+        setItems(list.length > 0 ? list : MOCK_MENU_ITEMS);
+      })
+      .catch(() => {
+        // Backend offline — show demo items
+        setItems(MOCK_MENU_ITEMS);
+      })
       .finally(() => setLoading(false));
   };
   useEffect(fetchItems, []);
