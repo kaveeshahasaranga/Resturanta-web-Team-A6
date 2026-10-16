@@ -9,17 +9,32 @@ const getHeaders = () => {
 };
 
 const handleResponse = async (res) => {
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || 'Something went wrong');
+  // Safely parse body — empty body or non-JSON won't crash
+  let data;
+  const text = await res.text();
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    data = {};
+  }
+  if (!res.ok) {
+    throw new Error(data.message || `Server error ${res.status}`);
+  }
   return data;
 };
 
+// Wraps fetch to catch network-level failures (backend not running, etc.)
+const safeFetch = (input, init) =>
+  fetch(input, init).catch(() => {
+    throw new Error('Cannot connect to server. Make sure the backend is running on port 5000.');
+  });
+
 export const api = {
-  get:    (endpoint)         => fetch(`${BASE_URL}${endpoint}`, { headers: getHeaders() }).then(handleResponse),
-  post:   (endpoint, body)   => fetch(`${BASE_URL}${endpoint}`, { method: 'POST',   headers: getHeaders(), body: JSON.stringify(body) }).then(handleResponse),
-  put:    (endpoint, body)   => fetch(`${BASE_URL}${endpoint}`, { method: 'PUT',    headers: getHeaders(), body: JSON.stringify(body) }).then(handleResponse),
-  patch:  (endpoint, body)   => fetch(`${BASE_URL}${endpoint}`, { method: 'PATCH',  headers: getHeaders(), body: JSON.stringify(body) }).then(handleResponse),
-  delete: (endpoint)         => fetch(`${BASE_URL}${endpoint}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
+  get:    (endpoint)        => safeFetch(`${BASE_URL}${endpoint}`, { headers: getHeaders() }).then(handleResponse),
+  post:   (endpoint, body)  => safeFetch(`${BASE_URL}${endpoint}`, { method: 'POST',   headers: getHeaders(), body: JSON.stringify(body) }).then(handleResponse),
+  put:    (endpoint, body)  => safeFetch(`${BASE_URL}${endpoint}`, { method: 'PUT',    headers: getHeaders(), body: JSON.stringify(body) }).then(handleResponse),
+  patch:  (endpoint, body)  => safeFetch(`${BASE_URL}${endpoint}`, { method: 'PATCH',  headers: getHeaders(), body: JSON.stringify(body) }).then(handleResponse),
+  delete: (endpoint)        => safeFetch(`${BASE_URL}${endpoint}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
 };
 
 // ─── Resource helpers ────────────────────────────────────────────────────────

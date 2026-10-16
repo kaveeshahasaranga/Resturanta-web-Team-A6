@@ -1,100 +1,186 @@
-import React from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Layers, 
-  UtensilsCrossed, 
-  ShoppingBag, 
-  Home, 
-  Info, 
-  Settings, 
-  Flame, 
-  LogOut,
-  Mail
+import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
+import {
+  Flame, LayoutDashboard, UtensilsCrossed, Home,
+  ShoppingBag, Settings, LogOut, Bell, ExternalLink,
+  BookOpen, ChefHat, MessageSquare
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext.jsx';
+import Footer from '../../components/layout/Footer.jsx';
 
-const AdminLayout = () => {
+// ─── Sidebar nav definition ───────────────────────────────────────────────────
+const NAV_ITEMS = [
+  { to: '/admin',              label: 'Dashboard',     icon: LayoutDashboard,  end: true },
+  { to: '/admin/menu',         label: 'Menu Items',    icon: UtensilsCrossed },
+  { to: '/admin/orders',       label: 'Orders',        icon: ShoppingBag },
+  { to: '/admin/home-content', label: 'Home Content',  icon: Home },
+  { to: '/admin/about-content',label: 'About Content', icon: BookOpen },
+  { to: '/admin/chefs',        label: 'Chefs',         icon: ChefHat },
+  { to: '/admin/contact',      label: 'Messages',      icon: MessageSquare },
+];
+
+// ─── Top Admin Bar ────────────────────────────────────────────────────────────
+function AdminTopBar({ user, onLogout }) {
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 h-[52px]
+                       bg-[#0d0d0d] border-b border-white/[0.07]
+                       flex items-center px-5 gap-4">
+
+      {/* Brand + breadcrumb */}
+      <Link to="/admin"
+        className="font-serif font-bold tracking-[0.22em] text-fuchsiusOrange
+                   text-[13px] uppercase shrink-0">
+        FUCHSIUS
+      </Link>
+      <span className="text-gray-700 text-sm">/</span>
+      <span className="text-gray-400 text-[12px]">Admin Portal</span>
+
+      <div className="ml-auto flex items-center gap-3">
+        {/* Preview button */}
+        <Link
+          to="/"
+          target="_blank"
+          className="hidden sm:flex items-center gap-1.5 text-gray-400
+                     border border-white/15 hover:border-white/30
+                     text-[10px] font-semibold tracking-[0.12em] uppercase
+                     px-3.5 py-1.5 transition-colors duration-200"
+        >
+          PREVIEW SITE
+          <ExternalLink className="w-3 h-3" />
+        </Link>
+
+        {/* Bell */}
+        <button className="relative w-8 h-8 flex items-center justify-center
+                           text-gray-500 hover:text-gray-300 transition-colors">
+          <Bell className="w-4 h-4" />
+          <span className="absolute top-1 right-1 w-2 h-2 bg-fuchsiusOrange
+                           rounded-full border border-[#0d0d0d]" />
+        </button>
+
+        {/* Admin user */}
+        <div className="flex items-center gap-2.5 border-l border-white/[0.08] pl-3">
+          <div className="w-7 h-7 rounded-full bg-fuchsiusOrange/20 border
+                          border-fuchsiusOrange/30 flex items-center justify-center
+                          text-fuchsiusOrange text-xs font-bold">
+            {user?.name?.[0] ?? 'A'}
+          </div>
+          <div className="hidden sm:block">
+            <p className="text-fuchsiusWhite text-[11px] font-semibold leading-none">
+              {user?.name ?? 'Admin'}
+            </p>
+            <p className="text-fuchsiusOrange text-[9px] font-bold tracking-[0.15em]
+                          uppercase mt-0.5">
+              SUPERUSER
+            </p>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+// ─── Left Sidebar ─────────────────────────────────────────────────────────────
+function AdminSidebar({ onLogout }) {
+  return (
+    <aside className="fixed left-0 top-[52px] bottom-0 w-[210px]
+                      bg-[#0d0d0d] border-r border-white/[0.07]
+                      flex flex-col z-40 overflow-y-auto">
+
+      {/* Logo box */}
+      <div className="flex items-center gap-3 px-4 py-5 border-b border-white/[0.07]">
+        <div className="w-9 h-9 bg-fuchsiusOrange/15 border border-fuchsiusOrange/30
+                        flex items-center justify-center shrink-0">
+          <Flame className="w-4 h-4 text-fuchsiusOrange fill-fuchsiusOrange" />
+        </div>
+        <div>
+          <p className="text-fuchsiusOrange font-bold text-[11px] tracking-[0.18em] uppercase">
+            FUCHSIUS
+          </p>
+          <p className="text-gray-600 text-[9px] tracking-[0.15em] uppercase">
+            CULINARY HEARTH
+          </p>
+        </div>
+      </div>
+
+      {/* Section label */}
+      <div className="px-4 pt-5 pb-2">
+        <p className="text-gray-700 text-[9px] font-bold tracking-[0.25em] uppercase">
+          HEARTH MANAGEMENT
+        </p>
+      </div>
+
+      {/* Nav links */}
+      <nav className="flex-1 px-2 space-y-0.5 pb-4">
+        {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
+          <NavLink
+            key={to}
+            to={to}
+            end={end}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2.5 text-[12px] font-semibold
+               transition-all duration-200 rounded-sm
+               ${isActive
+                 ? 'bg-fuchsiusOrange text-black'
+                 : 'text-gray-400 hover:text-white hover:bg-white/[0.05]'
+               }`
+            }
+          >
+            <Icon className="w-4 h-4 shrink-0" />
+            {label}
+          </NavLink>
+        ))}
+      </nav>
+
+      {/* Bottom: Settings + Log Out */}
+      <div className="border-t border-white/[0.07] px-2 py-3 space-y-0.5">
+        <NavLink
+          to="/admin/settings"
+          className={({ isActive }) =>
+            `flex items-center gap-3 px-3 py-2.5 text-[12px] font-semibold
+             transition-colors duration-200 rounded-sm
+             ${isActive ? 'bg-fuchsiusOrange text-black' : 'text-gray-600 hover:text-gray-300'}`
+          }
+        >
+          <Settings className="w-4 h-4 shrink-0" />
+          Settings
+        </NavLink>
+
+        <button
+          onClick={onLogout}
+          className="w-full flex items-center gap-3 px-3 py-2.5 text-[12px]
+                     font-semibold text-gray-600 hover:text-red-400
+                     transition-colors duration-200"
+        >
+          <LogOut className="w-4 h-4 shrink-0" />
+          Log Out
+        </button>
+      </div>
+    </aside>
+  );
+}
+
+// ─── Admin Layout root ────────────────────────────────────────────────────────
+export default function AdminLayout() {
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const menuItems = [
-    { path: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
-    { path: '/admin/categories', label: 'Categories', icon: Layers },
-    { path: '/admin/menu', label: 'Menu Items', icon: UtensilsCrossed },
-    { path: '/admin/orders', label: 'Orders', icon: ShoppingBag },
-    { path: '/admin/home', label: 'Home Content', icon: Home },
-    { path: '/admin/about', label: 'About Content', icon: Info },       // මෙතැන /admin/about ලෙස නිවැරදි කරන ලදී
-    { path: '/admin/contact', label: 'Contact Content', icon: Mail },   // Contact සඳහා ද එකතු කරන ලදී
-    { path: '/admin/settings', label: 'Settings', icon: Settings },
-  ];
-
-  const handleLogout = () => {
-    navigate('/');
-  };
+  const handleLogout = () => { logout(); navigate('/login'); };
 
   return (
-    <div className="flex min-h-screen bg-[#000000] text-white font-sans">
+    <div className="min-h-screen bg-[#0a0a0a]">
+
+      {/* Top bar */}
+      <AdminTopBar user={user} onLogout={handleLogout} />
+
       {/* Sidebar */}
-      <aside className="w-64 bg-[#0a0a0a] border-r border-white/10 flex flex-col justify-between p-6 fixed h-full z-20 overflow-y-auto">
-        <div>
-          {/* Brand Logo Header */}
-          <div className="flex items-center gap-3 pb-6 border-b border-white/10 mb-6 cursor-pointer">
-            <div className="w-9 h-9 rounded-lg bg-[#ec6f00]/10 border border-[#ec6f00]/30 flex items-center justify-center text-[#ec6f00]">
-              <Flame className="w-5 h-5" />
-            </div>
-            <div>
-              <h1 className="text-sm font-bold tracking-widest text-[#ec6f00] font-serif">PRANEETHA</h1>
-              <p className="text-[10px] tracking-widest text-gray-400 uppercase">CEYLON HEARTH</p>
-            </div>
-          </div>
+      <AdminSidebar onLogout={handleLogout} />
 
-          {/* Section Title */}
-          <div className="text-[10px] font-bold tracking-wider text-gray-500 uppercase mb-3 px-3">
-            Hearth Management
-          </div>
-
-          {/* Navigation Links */}
-          <nav className="space-y-1.5">
-            {menuItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  end={item.end}
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
-                      isActive
-                        ? 'bg-[#ec6f00] text-black font-bold shadow-[0_0_15px_rgba(236,111,0,0.3)]'
-                        : 'text-gray-400 hover:text-white hover:bg-white/5'
-                    }`
-                  }
-                >
-                  <Icon className="w-4 h-4" />
-                  <span>{item.label}</span>
-                </NavLink>
-              );
-            })}
-          </nav>
-        </div>
-
-        {/* Log Out Button */}
-        <div className="pt-6 border-t border-white/10">
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-red-400 hover:bg-red-500/10 transition-all"
-          >
-            <LogOut className="w-4 h-4" />
-            <span>Log Out</span>
-          </button>
-        </div>
-      </aside>
-
-      {/* Main Content Area */}
-      <main className="flex-1 ml-64 bg-[#000000] min-h-screen">
-        <Outlet />
-      </main>
+      {/* Main scrollable area */}
+      <div className="ml-[210px] pt-[52px] min-h-screen flex flex-col">
+        <main className="flex-1 p-6 md:p-8">
+          <Outlet />
+        </main>
+        <Footer />
+      </div>
     </div>
   );
-};
-
-export default AdminLayout;
+}
