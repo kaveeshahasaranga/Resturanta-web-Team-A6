@@ -9,7 +9,8 @@ import {
   Info, 
   Settings, 
   Flame, 
-  LogOut 
+  LogOut,
+  Mail
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -21,19 +22,19 @@ const AdminLayout = () => {
     { path: '/admin/menu', label: 'Menu Items', icon: UtensilsCrossed },
     { path: '/admin/orders', label: 'Orders', icon: ShoppingBag },
     { path: '/admin/home', label: 'Home Content', icon: Home },
-    { path: '/admin/contact', label: 'About Content', icon: Info },
+    { path: '/admin/about', label: 'About Content', icon: Info },       // මෙතැන /admin/about ලෙස නිවැරදි කරන ලදී
+    { path: '/admin/contact', label: 'Contact Content', icon: Mail },   // Contact සඳහා ද එකතු කරන ලදී
     { path: '/admin/settings', label: 'Settings', icon: Settings },
   ];
 
   const handleLogout = () => {
-   
     navigate('/');
   };
 
   return (
     <div className="flex min-h-screen bg-[#000000] text-white font-sans">
       {/* Sidebar */}
-      <aside className="w-64 bg-[#0a0a0a] border-r border-white/10 flex flex-col justify-between p-6 fixed h-full z-20">
+      <aside className="w-64 bg-[#0a0a0a] border-r border-white/10 flex flex-col justify-between p-6 fixed h-full z-20 overflow-y-auto">
         <div>
           {/* Brand Logo Header */}
           <div className="flex items-center gap-3 pb-6 border-b border-white/10 mb-6 cursor-pointer">
