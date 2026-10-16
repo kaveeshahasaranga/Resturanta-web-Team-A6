@@ -1,10 +1,10 @@
 import { Routes, Route } from 'react-router-dom';
 import { CartProvider } from './context/CartContext.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
+import ProtectedRoute from './components/auth/ProtectedRoute.jsx';
 
 // ─── Customer Pages ──────────────────────────────────────────────────────────
 import HomePage      from './pages/customer/HomePage.jsx';
-import AboutPage      from './pages/customer/AboutPage.jsx';
 import MenuPage      from './pages/customer/MenuPage.jsx';
 import CartPage      from './pages/customer/CartPage.jsx';
 import CheckoutPage  from './pages/customer/CheckoutPage.jsx';
@@ -34,7 +34,6 @@ export default function App() {
         <Routes>
           {/* ── Customer Routes ── */}
           <Route path="/"               element={<HomePage />} />
-          <Route path="/about"          element={<AboutPage />} />
           <Route path="/menu"           element={<MenuPage />} />
           <Route path="/cart"           element={<CartPage />} />
           <Route path="/checkout"       element={<CheckoutPage />} />
@@ -52,14 +51,14 @@ export default function App() {
           <Route path="/reset-password"  element={<ResetPasswordPage />} />
 
           {/* ── Admin Routes (nested under sidebar layout) ── */}
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index               element={<AdminDashboard />} />
-            <Route path="menu"         element={<AdminMenuPage />} />
-            <Route path="menu/new"     element={<AdminMenuForm />} />
+          <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+            <Route index                element={<AdminDashboard />} />
+            <Route path="menu"          element={<AdminMenuPage />} />
+            <Route path="menu/new"      element={<AdminMenuForm />} />
             <Route path="menu/edit/:id" element={<AdminMenuForm />} />
-            <Route path="orders"       element={<AdminOrdersPage />} />
-            <Route path="chefs"        element={<AdminChefsPage />} />
-            <Route path="contact"      element={<AdminContactPage />} />
+            <Route path="orders"        element={<AdminOrdersPage />} />
+            <Route path="chefs"         element={<AdminChefsPage />} />
+            <Route path="contact"       element={<AdminContactPage />} />
           </Route>
         </Routes>
       </CartProvider>
