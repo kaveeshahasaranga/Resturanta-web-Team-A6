@@ -23,6 +23,7 @@ import AdminDashboard   from './pages/admin/AdminDashboard.jsx';
 import AdminMenuPage    from './pages/admin/AdminMenuPage.jsx';
 import AdminMenuForm    from './pages/admin/AdminMenuForm.jsx';
 import AdminOrdersPage  from './pages/admin/AdminOrdersPage.jsx';
+import AdminOrderDetailsPage from './pages/admin/AdminOrderDetailsPage.jsx';
 import AdminChefsPage   from './pages/admin/AdminChefsPage.jsx';
 import AdminContactPage from './pages/admin/AdminContactPage.jsx';
 
@@ -56,6 +57,7 @@ export default function App() {
             <Route path="menu/new"     element={<AdminMenuForm />} />
             <Route path="menu/edit/:id" element={<AdminMenuForm />} />
             <Route path="orders"       element={<AdminOrdersPage />} />
+            <Route path="orders/:orderId" element={<AdminOrderDetailsPage />} />
             <Route path="chefs"        element={<AdminChefsPage />} />
             <Route path="contact"      element={<AdminContactPage />} />
           </Route>
