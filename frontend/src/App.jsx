@@ -19,7 +19,8 @@ import ResetPasswordPage  from './pages/auth/ResetPasswordPage.jsx';
 
 // ─── Admin Pages ─────────────────────────────────────────────────────────────
 import AdminLayout      from './pages/admin/AdminLayout.jsx';
-import AdminDashboard   from './pages/admin/AdminDashboard.jsx';
+import AdminDashboard   from './pages/admin/AdminHomeContentManagement.jsx';
+import AdminAboutPage   from './pages/admin/AdminAboutPage.jsx';
 import AdminMenuPage    from './pages/admin/AdminMenuPage.jsx';
 import AdminMenuForm    from './pages/admin/AdminMenuForm.jsx';
 import AdminOrdersPage  from './pages/admin/AdminOrdersPage.jsx';
@@ -52,9 +53,11 @@ export default function App() {
           {/* ── Admin Routes (nested under sidebar layout) ── */}
           <Route path="/admin" element={<AdminLayout />}>
             <Route index               element={<AdminDashboard />} />
+            <Route path="about"         element={<AdminAboutPage />} />
             <Route path="menu"         element={<AdminMenuPage />} />
             <Route path="menu/new"     element={<AdminMenuForm />} />
-            <Route path="menu/edit/:id" element={<AdminMenuForm />} />
+            <Route path="home"         element={<AdminHomeContentManagement />} />
+            <Route path="menu/new"     element={<AdminMenuForm />} />
             <Route path="orders"       element={<AdminOrdersPage />} />
             <Route path="chefs"        element={<AdminChefsPage />} />
             <Route path="contact"      element={<AdminContactPage />} />
