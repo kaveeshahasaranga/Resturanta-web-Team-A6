@@ -41,6 +41,20 @@ function BillingSummary({ subtotal, tax, grandTotal, onCheckout }) {
           </span>
         </div>
 
+        <div className="flex justify-between items-baseline">
+          <span className="text-gray-400 text-[12px]">Sommelier &amp; Service (10%)</span>
+          <span className="text-fuchsiusWhite text-[13px] font-medium">
+            Rs{tax.toFixed(2)}
+          </span>
+        </div>
+
+        <div className="flex justify-between items-start">
+          <span className="text-gray-400 text-[12px] leading-snug max-w-[160px]">
+            Haute Transport<br />
+            <span className="text-gray-600">(Obsidian Vault)</span>
+          </span>
+          <span className="text-fuchsiusOrange text-[11px] font-bold tracking-wide uppercase">
+            COMPLIMENTARY
           </span>
         </div>
       </div>
