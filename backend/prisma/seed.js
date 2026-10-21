@@ -47,6 +47,18 @@ async function main() {
   ]);
   console.log(`✅  ${chefs.length} chefs created`);
 
+  // ─── Menu categories ───────────────────────────────────────────────────────
+  const categories = [
+    ['APPETIZER', 'Appetizer'],
+    ['MAIN_COURSE', 'Main Course'],
+    ['DESSERT', 'Dessert'],
+    ['BEVERAGE', 'Beverage'],
+    ['SPECIAL', 'Special'],
+  ];
+  for (const [slug, name] of categories) {
+    await prisma.menuCategory.upsert({ where: { slug }, update: { name }, create: { slug, name } });
+  }
+
   // ─── Menu Items ────────────────────────────────────────────────────────────
   const menuItems = await Promise.all([
     prisma.menuItem.upsert({
@@ -56,7 +68,7 @@ async function main() {
         name: 'Bruschetta al Pomodoro',
         description: 'Toasted sourdough with fresh tomatoes, basil, and extra virgin olive oil.',
         price: 8.99,
-        category: 'APPETIZER',
+        category: { connect: { slug: 'APPETIZER' } },
         image: '/images/menu/bruschetta.jpg',
       },
     }),
@@ -67,7 +79,7 @@ async function main() {
         name: 'Grilled Salmon Fillet',
         description: 'Atlantic salmon with lemon butter sauce, seasonal vegetables, and wild rice.',
         price: 24.99,
-        category: 'MAIN_COURSE',
+        category: { connect: { slug: 'MAIN_COURSE' } },
         image: '/images/menu/salmon.jpg',
       },
     }),
@@ -78,7 +90,7 @@ async function main() {
         name: 'Tiramisu Classico',
         description: 'Traditional Italian dessert with mascarpone, espresso-soaked ladyfingers.',
         price: 9.99,
-        category: 'DESSERT',
+        category: { connect: { slug: 'DESSERT' } },
         image: '/images/menu/tiramisu.jpg',
       },
     }),
@@ -89,7 +101,7 @@ async function main() {
         name: 'Craft Orange Lemonade',
         description: 'Fresh-squeezed lemon and orange juice with a hint of mint.',
         price: 5.99,
-        category: 'BEVERAGE',
+        category: { connect: { slug: 'BEVERAGE' } },
         image: '/images/menu/lemonade.jpg',
       },
     }),
