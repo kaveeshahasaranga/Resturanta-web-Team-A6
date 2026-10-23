@@ -10,10 +10,10 @@ export const CATEGORIES = [
   { key: 'BEVERAGE',    label: 'CELLAR & PAIRINGS' },
 ];
 
-export default function CategoryFilter({ active, onChange }) {
+export default function CategoryFilter({ active, onChange, categories = [] }) {
   return (
     <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
-      {CATEGORIES.map(({ key, label }) => (
+      {[{ key: 'ALL', label: 'All Offerings' }, ...categories.map(c => ({ key: c.code, label: c.name }))].map(({ key, label }) => (
         <button
           key={key}
           onClick={() => onChange(key)}

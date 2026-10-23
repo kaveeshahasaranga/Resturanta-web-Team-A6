@@ -72,3 +72,19 @@ export const contactApi = {
 export const adminApi = {
   dashboard: ()             => api.get('/admin/dashboard'),
 };
+
+export const categoryApi = {
+  getAll: () => api.get('/categories'),
+  create: data => api.post('/categories', data),
+  update: (id, data) => api.put(`/categories/${id}`, data),
+  delete: id => api.delete(`/categories/${id}`),
+};
+export const cartApi = { quote: items => api.post('/cart/quote', { items }) };
+menuApi.availability = (id, isAvailable) => api.patch(`/menu/${id}/availability`, { isAvailable });
+menuApi.removeImage = id => api.delete(`/menu/${id}/image`);
+menuApi.uploadImage = (id, file) => {
+  const body = new FormData();
+  body.append('image', file);
+  const token = localStorage.getItem('fuchsius_token');
+  return safeFetch(`/api/menu/${id}/image`, { method: 'POST', body, headers: token ? { Authorization: `Bearer ${token}` } : {} }).then(handleResponse);
+};

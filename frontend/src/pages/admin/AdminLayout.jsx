@@ -11,6 +11,7 @@ import Footer from '../../components/layout/Footer.jsx';
 const NAV_ITEMS = [
   { to: '/admin',              label: 'Dashboard',     icon: LayoutDashboard,  end: true },
   { to: '/admin/menu',         label: 'Menu Items',    icon: UtensilsCrossed },
+  { to: '/admin/categories', label: 'Categories', icon: UtensilsCrossed },
   { to: '/admin/orders',       label: 'Orders',        icon: ShoppingBag },
   { to: '/admin/home-content', label: 'Home Content',  icon: Home },
   { to: '/admin/about-content',label: 'About Content', icon: BookOpen },

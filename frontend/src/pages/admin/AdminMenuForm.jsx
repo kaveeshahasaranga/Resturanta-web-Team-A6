@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { UploadCloud, Save, Loader2, ImageIcon, X } from 'lucide-react';
-import { menuApi } from '../../services/api.js';
+import { menuApi, categoryApi } from '../../services/api.js';
 
 // ─── Category options with luxury labels ──────────────────────────────────────
 const CATEGORIES = [
@@ -28,114 +28,21 @@ const inputCls = `w-full bg-[#0a0a0a] border border-white/[0.12] text-gray-200
                   transition-colors duration-200`;
 
 // ─── Image Upload / URL Zone ──────────────────────────────────────────────────
-function ImageZone({ value, onChange }) {
-  const [dragging, setDragging] = useState(false);
-  const [showUrl,  setShowUrl]  = useState(false);
-  const inputRef = useRef(null);
-
-  const handleDragOver  = (e) => { e.preventDefault(); setDragging(true); };
-  const handleDragLeave = ()    => setDragging(false);
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setDragging(false);
-    // If a file is dropped we'd normally upload — here we read as data URL for preview
-    const file = e.dataTransfer.files?.[0];
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (ev) => onChange(ev.target.result);
-      reader.readAsDataURL(file);
-    }
-  };
-  const handleFileInput = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (ev) => onChange(ev.target.result);
-      reader.readAsDataURL(file);
-    }
-  };
-
-  return (
-    <div className="flex flex-col h-full">
-      {value ? (
-        /* ── Preview ─────────────────────────────────────────────────── */
-        <div className="relative flex-1 min-h-[200px] bg-[#0a0a0a]
-                        border border-white/[0.12]">
-          <img
-            src={value}
-            alt="Preview"
-            className="w-full h-full object-cover"
-            style={{ minHeight: 200 }}
-            onError={(e) => { e.target.style.display='none'; }}
-          />
-          <button
-            type="button"
-            onClick={() => onChange('')}
-            className="absolute top-2 right-2 w-7 h-7 bg-black/70 text-white
-                       flex items-center justify-center hover:bg-red-500/80
-                       transition-colors duration-200"
-          >
-            <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      ) : (
-        /* ── Drop zone ───────────────────────────────────────────────── */
-        <div
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          onClick={() => inputRef.current?.click()}
-          className={`flex-1 min-h-[200px] flex flex-col items-center justify-center
-                      border cursor-pointer transition-all duration-200
-                      ${dragging
-                        ? 'border-fuchsiusOrange bg-fuchsiusOrange/5'
-                        : 'border-dashed border-white/[0.15] hover:border-white/30'
-                      }`}
-        >
-          <UploadCloud
-            className={`w-8 h-8 mb-3 transition-colors duration-200
-                        ${dragging ? 'text-fuchsiusOrange' : 'text-fuchsiusOrange/60'}`}
-          />
-          <p className="text-[9px] font-bold tracking-[0.22em] uppercase
-                        text-gray-600 text-center">
-            DRAG AND DROP OR BROWSE FILES
-          </p>
-          <input
-            ref={inputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleFileInput}
-          />
-        </div>
-      )}
-
-      {/* URL fallback toggle */}
-      <button
-        type="button"
-        onClick={() => setShowUrl(v => !v)}
-        className="mt-2 text-[9px] text-gray-700 hover:text-gray-400
-                   tracking-widest uppercase transition-colors duration-200 self-start"
-      >
-        {showUrl ? '− Hide URL' : '+ Paste image URL instead'}
-      </button>
-
-      {showUrl && (
-        <div className="mt-2">
-          <input
-            type="url"
-            value={value.startsWith('http') ? value : ''}
-            onChange={e => onChange(e.target.value)}
-            placeholder="https://example.com/image.jpg"
-            className={inputCls}
-          />
-        </div>
-      )}
-    </div>
-  );
+function ImageZone({ value, onChange, onFile }) {
+  return <div className="space-y-4">
+    {value && <img src={value} alt="Dish preview" className="w-full h-56 object-cover" />}
+    <input type="file" accept="image/jpeg,image/png,image/webp" onChange={e => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      if (file.size > 5 * 1024 * 1024) { alert('Image must be smaller than 5 MB'); return; }
+      onFile(file);
+    }} />
+    <p className="text-xs text-gray-400">JPEG, PNG or WebP, up to 5 MB.</p>
+    <input className={inputCls} value={value.startsWith('blob:') ? '' : value} onChange={e => onChange(e.target.value)} placeholder="Or paste an image URL" />
+    <button type="button" onClick={() => onChange('')} className="text-red-400 text-sm">Remove image</button>
+  </div>;
 }
 
-// ─── Main Form ────────────────────────────────────────────────────────────────
 const EMPTY = {
   name: '', description: '', price: '',
   category: 'MAIN_COURSE', image: '', isAvailable: true,
@@ -146,6 +53,16 @@ export default function AdminMenuForm() {
   const navigate  = useNavigate();
   const isEditing = Boolean(id);
 
+  const [categories, setCategories] = useState([]);
+  const [file, setFile] = useState(null);
+  const [savedId, setSavedId] = useState(null);
+  const [preview, setPreview] = useState('');
+  useEffect(() => { categoryApi.getAll().then(res => setCategories(res.data)).catch(err => setError(err.message)); }, []);
+  useEffect(() => {
+    if (!file) { setPreview(''); return; }
+    const url = URL.createObjectURL(file); setPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
   const [form,     setForm]     = useState(EMPTY);
   const [loading,  setLoading]  = useState(false);
   const [fetching, setFetching] = useState(isEditing);
@@ -181,9 +98,13 @@ export default function AdminMenuForm() {
     setLoading(true);
     setError('');
     try {
-      const payload = { ...form, price: parseFloat(form.price) };
-      if (isEditing) await menuApi.update(id, payload);
-      else           await menuApi.create(payload);
+      const payload = { ...form, price: form.price };
+      // Uploaded image paths are retained server-side; upload separately as multipart.
+      if (file || payload.image?.startsWith('/uploads/menu/')) delete payload.image;
+      const target = id || savedId;
+      const res = target ? await menuApi.update(target, payload) : await menuApi.create(payload);
+      setSavedId(res.data.id);
+      if (file) await menuApi.uploadImage(res.data.id, file);
       navigate('/admin/menu');
     } catch (err) {
       setError(err.message);
@@ -245,7 +166,7 @@ export default function AdminMenuForm() {
                     onChange={handleChange}
                     className={`${inputCls} appearance-none cursor-pointer`}
                   >
-                    {CATEGORIES.map(({ value, label }) => (
+                    {categories.map(({ code: value, name: label }) => (
                       <option key={value} value={value}>{label}</option>
                     ))}
                   </select>
@@ -307,9 +228,9 @@ export default function AdminMenuForm() {
             </p>
 
             <div className="flex-1">
-              <ImageZone
-                value={form.image}
-                onChange={(val) => setForm(f => ({ ...f, image: val }))}
+              <ImageZone onFile={setFile}
+                value={preview || form.image}
+                onChange={(val) => { setFile(null); setForm(f => ({ ...f, image: val })); }}
               />
             </div>
 

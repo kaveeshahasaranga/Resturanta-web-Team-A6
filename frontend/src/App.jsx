@@ -27,6 +27,7 @@ import AdminDashboard             from './pages/admin/AdminDashboard.jsx';
 import AdminHomeContentManagement from './pages/admin/AdminHomeContentManagement.jsx';
 import AdminAboutContentManagement from './pages/admin/AdminAboutContentManagement.jsx';
 import AdminMenuPage              from './pages/admin/AdminMenuPage.jsx';
+import AdminCategoriesPage from './pages/admin/AdminCategoriesPage.jsx';
 import AdminMenuForm              from './pages/admin/AdminMenuForm.jsx';
 import AdminOrdersPage            from './pages/admin/AdminOrdersPage.jsx';
 import AdminChefsPage             from './pages/admin/AdminChefsPage.jsx';
@@ -60,13 +61,14 @@ export default function App() {
           <Route path="/reset-password"  element={<ResetPasswordPage />} />
 
           {/* ── Admin Routes (nested under sidebar layout) ── */}
-          <Route path="/admin" element={<AdminLayout />}>
+          <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
             <Route index                element={<AdminDashboard />} />
             <Route path="home"          element={<AdminHomeContentManagement />} />
             <Route path="home-content"  element={<AdminHomeContentManagement />} />
             <Route path="about"         element={<AdminAboutContentManagement />} />
             <Route path="about-content" element={<AdminAboutContentManagement />} />
             <Route path="menu"          element={<AdminMenuPage />} />
+            <Route path="categories" element={<AdminCategoriesPage />} />
             <Route path="menu/new"      element={<AdminMenuForm />} />
             <Route path="menu/edit/:id" element={<AdminMenuForm />} />
             <Route path="orders"        element={<AdminOrdersPage />} />

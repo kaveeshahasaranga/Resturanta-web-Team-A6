@@ -8,7 +8,7 @@ import Navbar from '../../components/layout/Navbar.jsx';
 import Footer from '../../components/layout/Footer.jsx';
 
 export default function CheckoutPage() {
-  const { items, total, clearCart } = useCart();
+  const { items, total, clearCart, quote, checking, quoteError, canCheckout, refreshCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -23,10 +23,10 @@ export default function CheckoutPage() {
   const [success, setSuccess] = useState(false);
   const [error,   setError]   = useState('');
 
-  const TAX_RATE     = 0.08;
-  const DELIVERY_FEE = 3.99;
-  const tax          = total * TAX_RATE;
-  const grandTotal   = total + tax + DELIVERY_FEE;
+  const TAX_RATE     = 0.10;
+  const DELIVERY_FEE = 0;
+  const tax          = quote ? Number(quote.serviceCharge) : total * TAX_RATE;
+  const grandTotal   = quote ? Number(quote.total) : total + tax;
 
   const handleChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
 
@@ -36,13 +36,15 @@ export default function CheckoutPage() {
     setLoading(true);
     setError('');
     try {
-      await orderApi.create({
+      const latest = await refreshCart();
+      if (!latest?.canCheckout) throw new Error('Some dishes are unavailable. Update your cart before ordering.');
+      if (quote && (latest.total !== quote.total || latest.items.some((line, index) => line.unitPrice !== quote.items[index]?.unitPrice))) throw new Error('Prices changed. Please review your updated total and submit again.');
+      const res = await orderApi.create({
         ...form,
-        userId: user?.id || null,
         items:  items.map(i => ({ menuItemId: i.id, quantity: i.quantity })),
       });
       clearCart();
-      setSuccess(true);
+      navigate(`/order-confirmation/${res.data.id}`);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -102,9 +104,10 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
+              {quoteError && <p role="alert" className="text-red-400 text-sm">{quoteError}</p>}
               {error && <p className="text-red-400 text-sm">{error}</p>}
 
-              <button type="submit" disabled={loading} className="btn-primary w-full flex items-center justify-center gap-2 py-3">
+              <button type="submit" disabled={loading || checking || !canCheckout} className="btn-primary w-full flex items-center justify-center gap-2 py-3">
                 {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                 {loading ? 'Placing Order...' : `Place Order • $${grandTotal.toFixed(2)}`}
               </button>
@@ -117,16 +120,16 @@ export default function CheckoutPage() {
                 {items.map(i => (
                   <div key={i.id} className="flex justify-between text-gray-400">
                     <span className="truncate pr-2">{i.name} ×{i.quantity}</span>
-                    <span className="text-fuchsiusWhite shrink-0">${(parseFloat(i.price) * i.quantity).toFixed(2)}</span>
+                    <span className="text-fuchsiusWhite shrink-0">Rs{(parseFloat(i.price) * i.quantity).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
               <div className="border-t border-white/10 pt-3 space-y-2 text-sm text-gray-400">
-                <div className="flex justify-between"><span>Subtotal</span><span>${total.toFixed(2)}</span></div>
-                <div className="flex justify-between"><span>Tax</span><span>${tax.toFixed(2)}</span></div>
-                <div className="flex justify-between"><span>Delivery</span><span>${DELIVERY_FEE.toFixed(2)}</span></div>
+                <div className="flex justify-between"><span>Subtotal</span><span>Rs{total.toFixed(2)}</span></div>
+                <div className="flex justify-between"><span>Service (10%)</span><span>Rs{tax.toFixed(2)}</span></div>
+                <div className="flex justify-between"><span>Delivery</span><span>Rs{DELIVERY_FEE.toFixed(2)}</span></div>
                 <div className="flex justify-between font-bold text-fuchsiusWhite text-base pt-1">
-                  <span>Total</span><span className="text-fuchsiusOrange">${grandTotal.toFixed(2)}</span>
+                  <span>Total</span><span className="text-fuchsiusOrange">Rs{grandTotal.toFixed(2)}</span>
                 </div>
               </div>
             </div>

@@ -1,73 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Search, Loader2, Wine } from 'lucide-react';
-import { menuApi } from '../../services/api.js';
-import { MOCK_MENU_ITEMS } from '../../data/mockMenu.js';
+import { menuApi, categoryApi } from '../../services/api.js';
 import { useCart } from '../../context/CartContext.jsx';
 import Navbar from '../../components/layout/Navbar.jsx';
 import Footer from '../../components/layout/Footer.jsx';
 import MenuItemCard from '../../components/menu/MenuItemCard.jsx';
 import CategoryFilter from '../../components/menu/CategoryFilter.jsx';
 
-// ─── Sommelier Pairing Feature Banner ────────────────────────────────────────
-function SommelierPairing() {
-  const { addItem } = useCart();
-
-  const pairingItem = {
-    id:          'pairing-flight',
-    name:        'Grand Cru Companion Flight',
-    description: 'Six cellar vintages curated specifically to elevate the charcoal-fired notes of tonight\'s tasting sequence. Enquire for rare bottle acquisition.',
-    price:       220,
-    category:    'BEVERAGE',
-    image:       null,
-    isAvailable: true,
-  };
-
-  return (
-    <div className="mt-12 border border-white/10 bg-[#0e0e0e] px-8 py-7
-                    flex flex-col md:flex-row items-start md:items-center
-                    justify-between gap-6">
-      {/* Left */}
-      <div className="flex-1">
-        <p className="text-[9px] font-bold tracking-[0.25em] uppercase
-                      text-fuchsiusOrange mb-2">
-          THE SOMMELIER'S ARCHIVE
-        </p>
-        <h3 className="font-serif text-[22px] font-semibold text-fuchsiusWhite mb-2">
-          Grand Cru Companion Flight
-        </h3>
-        <p className="text-gray-500 text-[12px] leading-relaxed max-w-lg">
-          Six cellar vintages curated specifically to elevate the charcoal-fired notes of
-          tonight's tasting sequence. Enquire for rare bottle acquisition.
-        </p>
-      </div>
-
-      {/* Right */}
-      <div className="flex items-center gap-6 shrink-0">
-        <div>
-          <p className="text-[9px] font-bold tracking-[0.18em] uppercase
-                        text-gray-600 mb-1">
-            PER SEAT PAIRING
-          </p>
-          <p className="text-fuchsiusOrange font-bold text-[17px]">
-            Rs220.00
-          </p>
-        </div>
-        <button
-          onClick={() => addItem(pairingItem)}
-          className="bg-fuchsiusOrange hover:bg-orange-500 text-white text-[10px]
-                     font-bold tracking-[0.14em] uppercase px-5 py-3
-                     flex items-center gap-2 transition-colors duration-200"
-        >
-          <Wine className="w-3.5 h-3.5" />
-          ADD SOMMELIER PAIRING
-        </button>
-      </div>
-    </div>
-  );
-}
-
 // ─── Main MenuPage ────────────────────────────────────────────────────────────
 export default function MenuPage() {
+  const [categories, setCategories] = useState([]);
+  useEffect(() => { categoryApi.getAll().then(res => setCategories(res.data)).catch(err => setError(err.message)); }, []);
   const [items,    setItems]    = useState([]);
   const [loading,  setLoading]  = useState(true);
   const [error,    setError]    = useState(null);
@@ -83,13 +26,10 @@ export default function MenuPage() {
         const res = await menuApi.getAll(params);
         // Backend may return { data: [...] } or plain array
         const list = Array.isArray(res) ? res : (res.data ?? res);
-        setItems(list.length > 0 ? list : MOCK_MENU_ITEMS);
-      } catch {
-        // Backend offline — show demo items so the grid is never blank
-        const filtered = category === 'ALL'
-          ? MOCK_MENU_ITEMS
-          : MOCK_MENU_ITEMS.filter(i => i.category === category);
-        setItems(filtered);
+        setItems(list);
+      } catch (err) {
+        setItems([]);
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -144,7 +84,7 @@ export default function MenuPage() {
 
             {/* Category Filter */}
             <div className="flex-1 overflow-hidden">
-              <CategoryFilter active={category} onChange={setCategory} />
+              <CategoryFilter categories={categories} active={category} onChange={setCategory} />
             </div>
           </div>
         </div>
@@ -177,7 +117,7 @@ export default function MenuPage() {
           )}
 
           {/* ── Sommelier Pairing Banner ──────────────────────────────────── */}
-          {!loading && !error && <SommelierPairing />}
+          {!loading && !error && }
         </div>
 
         {/* Bottom spacing */}

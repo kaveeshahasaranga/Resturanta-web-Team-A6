@@ -9,12 +9,13 @@ export function AuthProvider({ children }) {
 
   // Hydrate from localStorage on mount
   useEffect(() => {
+    let active = true;
     const token = localStorage.getItem('fuchsius_token');
-    const stored = localStorage.getItem('fuchsius_user');
-    if (token && stored) {
-      setUser(JSON.parse(stored));
-    }
-    setLoading(false);
+    if (!token) { setLoading(false); return; }
+    api.get('/auth/me').then(res => { if (active) setUser(res.data); })
+      .catch(() => { localStorage.removeItem('fuchsius_token'); localStorage.removeItem('fuchsius_user'); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
   }, []);
 
   const login = useCallback(async (email, password) => {
@@ -23,32 +24,6 @@ export function AuthProvider({ children }) {
     localStorage.setItem('fuchsius_user', JSON.stringify(data.data.user));
     setUser(data.data.user);
     return data.data.user;
-  }, []);
-
-  const loginAsAdmin = useCallback((email) => {
-    const adminUser = {
-      id: 'mock-admin',
-      name: email.split('@')[0] || 'Hearth Admin',
-      email,
-      role: 'ADMIN',
-    };
-    localStorage.setItem('fuchsius_token', 'mock-admin-session');
-    localStorage.setItem('fuchsius_user', JSON.stringify(adminUser));
-    setUser(adminUser);
-    return adminUser;
-  }, []);
-
-  const loginAsCustomer = useCallback((email) => {
-    const customerUser = {
-      id: 'mock-customer',
-      name: email.split('@')[0] || 'Patron Member',
-      email,
-      role: 'CUSTOMER',
-    };
-    localStorage.setItem('fuchsius_token', 'mock-customer-session');
-    localStorage.setItem('fuchsius_user', JSON.stringify(customerUser));
-    setUser(customerUser);
-    return customerUser;
   }, []);
 
   const register = useCallback(async (name, email, password) => {
@@ -68,7 +43,7 @@ export function AuthProvider({ children }) {
   const isAdmin = user?.role === 'ADMIN';
 
   return (
-    <AuthContext.Provider value={{ user, loading, isAdmin, login, loginAsAdmin, loginAsCustomer, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, isAdmin, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

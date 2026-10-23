@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, ShoppingBag, Loader2 } from 'lucide-react';
 import { menuApi } from '../../services/api.js';
-import { MOCK_MENU_ITEMS } from '../../data/mockMenu.js';
 import { useCart } from '../../context/CartContext.jsx';
 import Navbar from '../../components/layout/Navbar.jsx';
 import Footer from '../../components/layout/Footer.jsx';
@@ -35,15 +34,7 @@ export default function MenuItemDetailPage() {
         const found = res?.data ?? res;
         setItem(found);
       })
-      .catch(() => {
-        // Backend offline — look up item in local mock data by ID
-        const mock = MOCK_MENU_ITEMS.find(m => m.id === id);
-        if (mock) {
-          setItem(mock);
-        } else {
-          setError('Item not found.');
-        }
-      })
+      .catch(err => { setItem(null); setError(err.message); })
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -129,7 +120,7 @@ export default function MenuItemDetailPage() {
                                      text-fuchsiusOrange text-[9px] font-bold
                                      tracking-[0.22em] uppercase px-3.5 py-1.5">
                       À LA CARTE&nbsp;•&nbsp;
-                      {CATEGORY_LABELS[item.category] || item.category}
+                      {item.categoryName || CATEGORY_LABELS[item.category] || item.category}
                     </span>
                   </div>
 

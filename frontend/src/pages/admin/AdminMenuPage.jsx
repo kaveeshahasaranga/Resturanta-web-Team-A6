@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Plus, Pencil, Trash2, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { menuApi } from '../../services/api.js';
-import { MOCK_MENU_ITEMS } from '../../data/mockMenu.js';
 
 // ─── Category display labels ──────────────────────────────────────────────────
 const CATEGORY_LABEL = {
@@ -106,12 +105,9 @@ export default function AdminMenuPage() {
     menuApi.getAll()
       .then(res => {
         const list = Array.isArray(res) ? res : (res.data ?? res);
-        setItems(list.length > 0 ? list : MOCK_MENU_ITEMS);
+        setItems(list);
       })
-      .catch(() => {
-        // Backend offline — show demo items
-        setItems(MOCK_MENU_ITEMS);
-      })
+      .catch(err => { setError(err.message); setItems([]); })
       .finally(() => setLoading(false));
   };
   useEffect(fetchItems, []);
@@ -125,7 +121,8 @@ export default function AdminMenuPage() {
   };
 
   // Pagination slicing
-  const totalPages   = Math.ceil(items.length / ITEMS_PER_PAGE);
+  const totalPages   = Math.max(1, Math.ceil(items.length / ITEMS_PER_PAGE));
+  useEffect(() => { setPage(p => Math.min(p, totalPages)); }, [totalPages]);
   const paginated    = items.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   return (
@@ -216,7 +213,7 @@ export default function AdminMenuPage() {
                   <span className="inline-flex border border-white/20 text-gray-300
                                    text-[9px] font-bold tracking-[0.14em] uppercase
                                    px-3 py-1.5">
-                    {CATEGORY_LABEL[item.category] || item.category}
+                    {item.categoryName || CATEGORY_LABEL[item.category] || item.category}
                   </span>
                 </div>
 
@@ -226,7 +223,10 @@ export default function AdminMenuPage() {
                 </p>
 
                 {/* Status */}
-                <StatusBadge isAvailable={item.isAvailable} />
+                <button type="button" aria-label={`Toggle availability of ${item.name}`} onClick={async () => {
+                      try { const res = await menuApi.availability(item.id, !item.isAvailable); setItems(prev => prev.map(i => i.id === item.id ? res.data : i)); }
+                      catch (err) { setError(err.message); }
+                    }}><StatusBadge isAvailable={item.isAvailable} /></button>
 
                 {/* Actions */}
                 <div className="flex items-center gap-3">

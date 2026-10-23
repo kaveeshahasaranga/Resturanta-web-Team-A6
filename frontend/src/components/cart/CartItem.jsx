@@ -22,7 +22,7 @@ export default function CartItem({ item, index }) {
       <div className="flex gap-5 items-start">
 
         {/* ── Thumbnail ──────────────────────────────────────────────────── */}
-        <div className="w-[130px] h-[110px] shrink-0 overflow-hidden bg-neutral-900">
+        <div className="w-[80px] sm:w-[130px] h-[90px] sm:h-[110px] shrink-0 overflow-hidden bg-neutral-900">
           {item.image ? (
             <img
               src={item.image}
@@ -74,6 +74,7 @@ export default function CartItem({ item, index }) {
             {/* + */}
             <button
               onClick={() => updateQty(item.id, item.quantity + 1)}
+              disabled={!item.isAvailable || item.quantity >= 99}
               aria-label="Increase quantity"
               className="w-8 h-8 border border-white/20 flex items-center justify-center
                          text-gray-400 hover:border-fuchsiusOrange hover:text-fuchsiusOrange
@@ -100,7 +101,7 @@ export default function CartItem({ item, index }) {
 
           {/* Unit price */}
           <p className="mt-3 text-gray-600 text-[11px]">
-            Unit Price: Rs{parseFloat(item.price).toFixed(2)}
+            {!item.isAvailable && <span className="text-red-400">Unavailable · </span>}Unit Price: Rs{parseFloat(item.price).toFixed(2)}
           </p>
         </div>
       </div>

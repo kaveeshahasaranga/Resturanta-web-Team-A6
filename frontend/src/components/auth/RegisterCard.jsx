@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Check, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 export default function RegisterCard({ onSwitchToLogin }) {
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,7 +23,7 @@ export default function RegisterCard({ onSwitchToLogin }) {
   const isRequirementMet = hasMinLength && hasLetter && hasNumber;
   const passwordsMatch = password.length > 0 && password === confirmPassword;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isRequirementMet) {
       setToast({
@@ -41,32 +43,11 @@ export default function RegisterCard({ onSwitchToLogin }) {
     setLoading(true);
     setToast(null);
 
-    // Save patron credentials to profile
     try {
-      localStorage.setItem(
-        'praneetha_patron_profile',
-        JSON.stringify({
-          name: fullName || 'Patron Member',
-          email: email,
-          phone: '077 123 4567',
-          city: 'Colombo',
-          address: '45 Temple Road, Colombo 05',
-        })
-      );
-    } catch (err) {
-      // ignore
-    }
-
-    setTimeout(() => {
-      setLoading(false);
-      setToast({
-        type: 'success',
-        message: 'Account created successfully! Welcome to PRANEETHA Patron Society.',
-      });
-      setTimeout(() => {
-        navigate('/profile');
-      }, 800);
-    }, 900);
+      await register(fullName, email, password);
+      navigate('/profile');
+    } catch (err) { setToast({ type: 'error', message: err.message }); }
+    finally { setLoading(false); }
   };
 
   return (

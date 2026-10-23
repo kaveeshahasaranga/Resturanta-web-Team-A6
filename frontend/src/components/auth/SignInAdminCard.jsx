@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext.jsx';
 
 export default function SignInAdminCard({ onSwitchToCustomer, onSwitchToForgotPassword }) {
   const navigate = useNavigate();
-  const { loginAsAdmin } = useAuth();
+  const { login, logout } = useAuth();
   const [adminEmail, setAdminEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -13,23 +13,14 @@ export default function SignInAdminCard({ onSwitchToCustomer, onSwitchToForgotPa
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!adminEmail || !password) return;
-    setLoading(true);
-    setToast(null);
-
-    setTimeout(() => {
-      loginAsAdmin(adminEmail);
-      setLoading(false);
-      setToast({
-        type: 'success',
-        message: 'Admin authorization granted. Loading PRANEETHA operations suite...',
-      });
-      setTimeout(() => {
-        navigate('/admin');
-      }, 700);
-    }, 900);
+  const handleSubmit = async (e) => {
+    e.preventDefault(); setLoading(true); setToast(null);
+    try {
+      const user = await login(adminEmail, password);
+      if (user.role !== 'ADMIN') { logout(); throw new Error('This account does not have admin access.'); }
+      navigate('/admin');
+    } catch (err) { setToast({ type: 'error', message: err.message }); }
+    finally { setLoading(false); }
   };
 
   return (

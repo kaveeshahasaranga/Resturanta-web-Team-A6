@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext.jsx';
 
 export default function SignInCustomerCard({ onSwitchToAdmin, onSwitchToRegister, onSwitchToForgotPassword }) {
   const navigate = useNavigate();
-  const { loginAsCustomer } = useAuth();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -13,40 +13,14 @@ export default function SignInCustomerCard({ onSwitchToAdmin, onSwitchToRegister
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!email || !password) return;
-    setLoading(true);
-    setToast(null);
-
-    // Save patron credentials to profile
+  const handleSubmit = async (e) => {
+    e.preventDefault(); setLoading(true); setToast(null);
     try {
-      const existing = localStorage.getItem('praneetha_patron_profile');
-      const profileObj = existing ? JSON.parse(existing) : {};
-      const derivedName = email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-      localStorage.setItem(
-        'praneetha_patron_profile',
-        JSON.stringify({
-          ...profileObj,
-          email: email,
-          name: profileObj.name || derivedName || 'Patron Member',
-        })
-      );
-    } catch (err) {
-      // ignore
-    }
-
-    setTimeout(() => {
-      loginAsCustomer(email);
-      setLoading(false);
-      setToast({
-        type: 'success',
-        message: 'Welcome back to PRANEETHA. Curating your private dining table...',
-      });
-      setTimeout(() => {
-        navigate('/profile');
-      }, 700);
-    }, 900);
+      const user = await login(email, password);
+      
+      navigate('/profile');
+    } catch (err) { setToast({ type: 'error', message: err.message }); }
+    finally { setLoading(false); }
   };
 
   return (

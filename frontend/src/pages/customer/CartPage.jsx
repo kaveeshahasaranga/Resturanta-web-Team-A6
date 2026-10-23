@@ -7,7 +7,7 @@ import Footer from '../../components/layout/Footer.jsx';
 import CartItem from '../../components/cart/CartItem.jsx';
 
 // ─── Billing Summary sidebar ──────────────────────────────────────────────────
-function BillingSummary({ subtotal, tax, grandTotal, onCheckout }) {
+function BillingSummary({ subtotal, tax, grandTotal, onCheckout, disabled }) {
   const [promoCode, setPromoCode] = useState('');
   const [promoApplied, setPromoApplied] = useState(false);
 
@@ -59,36 +59,6 @@ function BillingSummary({ subtotal, tax, grandTotal, onCheckout }) {
         </div>
       </div>
 
-      {/* Promo code */}
-      <div className="mb-6">
-        <p className="text-gray-600 text-[9px] font-bold tracking-[0.22em] uppercase mb-2">
-          CELLAR PASS / ATELIER CODE
-        </p>
-        <div className="flex gap-0">
-          <input
-            type="text"
-            value={promoCode}
-            onChange={e => setPromoCode(e.target.value.toUpperCase())}
-            placeholder="PROMO CODE"
-            className="flex-1 bg-transparent border border-white/15 border-r-0
-                       text-gray-300 placeholder-gray-700 text-[11px] px-3 py-2.5
-                       focus:outline-none focus:border-fuchsiusOrange/40
-                       transition-colors duration-200"
-          />
-          <button
-            onClick={handleApply}
-            className={`px-4 py-2.5 text-[10px] font-bold tracking-[0.12em] uppercase
-                        border transition-colors duration-200
-                        ${promoApplied
-                          ? 'bg-green-600/20 text-green-400 border-green-600/30'
-                          : 'border-white/15 text-gray-400 hover:border-white/40 hover:text-white'
-                        }`}
-          >
-            {promoApplied ? '✓' : 'APPLY'}
-          </button>
-        </div>
-      </div>
-
       {/* Divider */}
       <div className="border-t border-white/[0.08] mb-5" />
 
@@ -107,6 +77,7 @@ function BillingSummary({ subtotal, tax, grandTotal, onCheckout }) {
 
       {/* CTA */}
       <button
+        disabled={disabled}
         onClick={onCheckout}
         className="w-full bg-fuchsiusOrange hover:bg-orange-500 text-white
                    text-[11px] font-bold tracking-[0.18em] uppercase
@@ -148,12 +119,12 @@ function EmptyCart() {
 
 // ─── Main CartPage ────────────────────────────────────────────────────────────
 export default function CartPage() {
-  const { items, total, clearCart } = useCart();
+  const { items, total, clearCart, quote, checking, quoteError, canCheckout, refreshCart } = useCart();
   const navigate = useNavigate();
 
   const SERVICE_CHARGE = 0.10;            // 10% sommelier & service
-  const tax            = total * SERVICE_CHARGE;
-  const grandTotal     = total + tax;     // transport is complimentary
+  const tax            = quote ? Number(quote.serviceCharge) : total * SERVICE_CHARGE;
+  const grandTotal     = quote ? Number(quote.total) : total + tax;     // transport is complimentary
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0a]">
@@ -178,6 +149,9 @@ export default function CartPage() {
             <div className="border-t border-white/[0.08] mt-5" />
           </div>
 
+          {quoteError && <p role="alert" className="text-red-400 mb-4">{quoteError} <button onClick={() => refreshCart().catch(() => {})}>Retry</button></p>}
+          {checking && <p className="text-gray-400">Checking current prices and availability…</p>}
+          {!checking && items.some(i => !i.isAvailable) && <p role="alert" className="text-red-400 mb-4">Remove unavailable dishes before checkout.</p>}
           {items.length === 0 ? (
             <EmptyCart />
           ) : (
@@ -208,7 +182,8 @@ export default function CartPage() {
 
               {/* ── Right — Billing Summary ─────────────────────────────── */}
               <BillingSummary
-                subtotal={total}
+                disabled={!canCheckout}
+                subtotal={quote ? Number(quote.subtotal) : total}
                 tax={tax}
                 grandTotal={grandTotal}
                 onCheckout={() => navigate('/checkout')}
