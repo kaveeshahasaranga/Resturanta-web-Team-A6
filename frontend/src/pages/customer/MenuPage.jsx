@@ -117,7 +117,7 @@ export default function MenuPage() {
           )}
 
           {/* ── Sommelier Pairing Banner ──────────────────────────────────── */}
-          {!loading && !error && }
+          
         </div>
 
         {/* Bottom spacing */}
