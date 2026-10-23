@@ -29,14 +29,6 @@ enum OrderStatus {
   CANCELLED
 }
 
-enum MenuCategory {
-  APPETIZER
-  MAIN_COURSE
-  DESSERT
-  BEVERAGE
-  SPECIAL
-}
-
 // ─────────────────────────────────────────────
 // MODELS
 // ─────────────────────────────────────────────
@@ -73,7 +65,9 @@ model MenuItem {
   name        String
   description String       @db.Text
   price       Decimal      @db.Decimal(10, 2)
-  category    MenuCategory
+  category    String       @db.VarChar(64)
+  categoryInfo MenuCategory @relation(fields: [category], references: [code], onUpdate: Cascade, onDelete: Restrict)
+  deletedAt   DateTime?
   image       String?
   isAvailable Boolean      @default(true)
   createdAt   DateTime     @default(now())
@@ -127,4 +121,15 @@ model ContactMessage {
   createdAt DateTime @default(now())
 
   @@map("contact_messages")
+}
+
+model MenuCategory {
+  id Int @id @default(autoincrement())
+  code String @unique @db.VarChar(64)
+  name String @db.VarChar(100)
+  description String? @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  items MenuItem[]
+  @@map("menu_categories")
 }

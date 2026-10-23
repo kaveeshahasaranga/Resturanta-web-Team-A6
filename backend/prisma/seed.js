@@ -47,6 +47,9 @@ async function main() {
   ]);
   console.log(`✅  ${chefs.length} chefs created`);
 
+  for (const [code, name] of [['APPETIZER', 'Appetizers'], ['MAIN_COURSE', 'Signature Mains'], ['SPECIAL', "Chef Specials"], ['DESSERT', 'Desserts'], ['BEVERAGE', 'Beverages']]) {
+    await prisma.menuCategory.upsert({ where: { code }, update: {}, create: { code, name } });
+  }
   // ─── Menu Items ────────────────────────────────────────────────────────────
   const menuItems = await Promise.all([
     prisma.menuItem.upsert({
@@ -57,7 +60,7 @@ async function main() {
         description: 'Toasted sourdough with fresh tomatoes, basil, and extra virgin olive oil.',
         price: 8.99,
         category: 'APPETIZER',
-        image: '/images/menu/bruschetta.jpg',
+        image: '/images/dishes/polos-ambula.jpg',
       },
     }),
     prisma.menuItem.upsert({
@@ -68,7 +71,7 @@ async function main() {
         description: 'Atlantic salmon with lemon butter sauce, seasonal vegetables, and wild rice.',
         price: 24.99,
         category: 'MAIN_COURSE',
-        image: '/images/menu/salmon.jpg',
+        image: '/images/dishes/seafood-fried-rice.jpg',
       },
     }),
     prisma.menuItem.upsert({
@@ -79,7 +82,7 @@ async function main() {
         description: 'Traditional Italian dessert with mascarpone, espresso-soaked ladyfingers.',
         price: 9.99,
         category: 'DESSERT',
-        image: '/images/menu/tiramisu.jpg',
+        image: '/images/dishes/lamprais.jpg',
       },
     }),
     prisma.menuItem.upsert({
@@ -90,7 +93,7 @@ async function main() {
         description: 'Fresh-squeezed lemon and orange juice with a hint of mint.',
         price: 5.99,
         category: 'BEVERAGE',
-        image: '/images/menu/lemonade.jpg',
+        image: '/images/dishes/fresh-lime-juice.jpg',
       },
     }),
   ]);
