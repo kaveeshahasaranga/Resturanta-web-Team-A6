@@ -38,6 +38,7 @@ export async function quoteCart(db, items) {
     return { ...line, item: found ? publicItem(found) : null, isAvailable: Boolean(found?.isAvailable), unitPrice: (unitCents / 100).toFixed(2), totalPrice: (unitCents * line.quantity / 100).toFixed(2) };
   });
   const subtotalCents = quoted.reduce((sum, i) => sum + Math.round(Number(i.totalPrice) * 100), 0);
+  if (subtotalCents > 9090909000) throw fail('Order total exceeds the maximum supported amount');
   const serviceCents = Math.round(subtotalCents * 0.10);
   return { items: quoted, canCheckout: quoted.every(i => i.isAvailable), subtotal: (subtotalCents / 100).toFixed(2), serviceCharge: (serviceCents / 100).toFixed(2), total: ((subtotalCents + serviceCents) / 100).toFixed(2) };
 }

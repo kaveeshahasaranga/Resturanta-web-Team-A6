@@ -8,3 +8,5 @@ yarn-debug.log*
 yarn-error.log*
 
 backend/uploads/
+*.db
+*.db-journal

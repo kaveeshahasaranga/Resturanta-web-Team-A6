@@ -1,6 +1,6 @@
 # FUCHSIUS – Online Restaurant Ordering & Management System
 
-> A full-stack MERN + Prisma monorepo with a dark-mode, orange-accented theme.
+> A full-stack React + Express + MySQL/Prisma monorepo with a dark-mode, orange-accented theme.
 
 ---
 
@@ -135,3 +135,8 @@ npm run dev                  # start on http://localhost:5173
 | GET  | `/api/chefs` | List chefs |
 | POST | `/api/contact` | Submit message |
 | GET  | `/api/admin/dashboard` | Dashboard stats |
+
+
+## Menu backend
+
+See [backend/MENU_API.md](backend/MENU_API.md) for setup, migration, endpoints and tests.

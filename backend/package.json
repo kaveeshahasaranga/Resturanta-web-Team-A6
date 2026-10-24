@@ -1,7 +1,7 @@
 {
   "name": "fuchsius-backend",
   "version": "1.0.0",
-  "description": "FUCHSIUS Restaurant Management System – REST API",
+  "description": "FUCHSIUS Restaurant Management System \u2013 REST API",
   "main": "src/server.js",
   "type": "module",
   "scripts": {
@@ -9,9 +9,14 @@
     "start": "node src/server.js",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "db:setup": "prisma db push && node prisma/seed.js",
     "db:studio": "prisma studio",
     "db:seed": "node prisma/seed.js",
-    "db:reset": "prisma migrate reset"
+    "db:reset": "prisma migrate reset",
+    "db:mysql:setup": "prisma migrate deploy --schema=prisma/schema.mysql.prisma && node prisma/seed.js",
+    "test": "node --test tests/*.test.js",
+    "db:deploy": "prisma migrate deploy"
   },
   "dependencies": {
     "@prisma/client": "^5.15.0",

@@ -9,7 +9,7 @@ router.get('/dashboard', async (req, res, next) => {
       req.prisma.order.count(),
       req.prisma.order.aggregate({ _sum: { total: true } }),
       req.prisma.order.count({ where: { status: 'PENDING' } }),
-      req.prisma.menuItem.count(),
+      req.prisma.menuItem.count({ where: { deletedAt: null } }),
       req.prisma.contactMessage.count({ where: { isRead: false } }),
     ]);
 

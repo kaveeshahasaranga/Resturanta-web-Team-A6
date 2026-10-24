@@ -1,4 +1,4 @@
-// This is your Prisma schema file,
+// This is your Prisma schema file configured for SQLite (instant local development)
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
@@ -6,39 +6,16 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
-
-// ─────────────────────────────────────────────
-// ENUMS
-// ─────────────────────────────────────────────
-
-enum Role {
-  CUSTOMER
-  ADMIN
-  CHEF
-}
-
-enum OrderStatus {
-  PENDING
-  CONFIRMED
-  PREPARING
-  READY
-  DELIVERED
-  CANCELLED
-}
-
-// ─────────────────────────────────────────────
-// MODELS
-// ─────────────────────────────────────────────
 
 model User {
   id        Int      @id @default(autoincrement())
   name      String
   email     String   @unique
   password  String
-  role      Role     @default(CUSTOMER)
+  role      String   @default("CUSTOMER")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -51,7 +28,7 @@ model Chef {
   id        Int      @id @default(autoincrement())
   name      String
   title     String
-  bio       String   @db.Text
+  bio       String
   specialty String
   image     String?
   createdAt DateTime @default(now())
@@ -61,17 +38,17 @@ model Chef {
 }
 
 model MenuItem {
-  id          Int          @id @default(autoincrement())
-  name        String
-  description String       @db.Text
-  price       Decimal      @db.Decimal(10, 2)
-  category    String       @db.VarChar(64)
+  id           Int          @id @default(autoincrement())
+  name         String
+  description  String
+  price        Decimal
+  category     String
   categoryInfo MenuCategory @relation(fields: [category], references: [code], onUpdate: Cascade, onDelete: Restrict)
-  deletedAt   DateTime?
-  image       String?
-  isAvailable Boolean      @default(true)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  deletedAt    DateTime?
+  image        String?
+  isAvailable  Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
   orderItems OrderItem[]
 
@@ -83,10 +60,10 @@ model Order {
   customerName    String
   customerEmail   String
   customerPhone   String?
-  deliveryAddress String?     @db.Text
-  total           Decimal     @db.Decimal(10, 2)
-  status          OrderStatus @default(PENDING)
-  notes           String?     @db.Text
+  deliveryAddress String?
+  total           Decimal
+  status          String      @default("PENDING")
+  notes           String?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 
@@ -101,8 +78,8 @@ model Order {
 model OrderItem {
   id         Int     @id @default(autoincrement())
   quantity   Int
-  unitPrice  Decimal @db.Decimal(10, 2)
-  totalPrice Decimal @db.Decimal(10, 2)
+  unitPrice  Decimal
+  totalPrice Decimal
 
   orderId    Int
   order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
@@ -116,7 +93,7 @@ model ContactMessage {
   id        Int      @id @default(autoincrement())
   name      String
   email     String
-  message   String   @db.Text
+  message   String
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
 
@@ -124,12 +101,13 @@ model ContactMessage {
 }
 
 model MenuCategory {
-  id Int @id @default(autoincrement())
-  code String @unique @db.VarChar(64)
-  name String @db.VarChar(100)
-  description String? @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  items MenuItem[]
+  id          Int        @id @default(autoincrement())
+  code        String     @unique
+  name        String
+  description String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  items       MenuItem[]
+
   @@map("menu_categories")
 }

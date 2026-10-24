@@ -1,0 +1,136 @@
+// This is your Prisma schema file for MySQL (production / Docker)
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────
+
+enum Role {
+  CUSTOMER
+  ADMIN
+  CHEF
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  READY
+  DELIVERED
+  CANCELLED
+}
+
+// ─────────────────────────────────────────────
+// MODELS
+// ─────────────────────────────────────────────
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(CUSTOMER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders Order[]
+
+  @@map("users")
+}
+
+model Chef {
+  id        Int      @id @default(autoincrement())
+  name      String
+  title     String
+  bio       String   @db.Text
+  specialty String
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("chefs")
+}
+
+model MenuItem {
+  id          Int          @id @default(autoincrement())
+  name        String
+  description String       @db.Text
+  price       Decimal      @db.Decimal(10, 2)
+  category    String       @db.VarChar(64)
+  categoryInfo MenuCategory @relation(fields: [category], references: [code], onUpdate: Cascade, onDelete: Restrict)
+  deletedAt   DateTime?
+  image       String?
+  isAvailable Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  orderItems OrderItem[]
+
+  @@map("menu_items")
+}
+
+model Order {
+  id              Int         @id @default(autoincrement())
+  customerName    String
+  customerEmail   String
+  customerPhone   String?
+  deliveryAddress String?     @db.Text
+  total           Decimal     @db.Decimal(10, 2)
+  status          OrderStatus @default(PENDING)
+  notes           String?     @db.Text
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  userId Int?
+  user   User? @relation(fields: [userId], references: [id])
+
+  items OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id         Int     @id @default(autoincrement())
+  quantity   Int
+  unitPrice  Decimal @db.Decimal(10, 2)
+  totalPrice Decimal @db.Decimal(10, 2)
+
+  orderId    Int
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItemId Int
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+
+  @@map("order_items")
+}
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("contact_messages")
+}
+
+model MenuCategory {
+  id          Int        @id @default(autoincrement())
+  code        String     @unique @db.VarChar(64)
+  name        String     @db.VarChar(100)
+  description String?    @db.Text
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  items       MenuItem[]
+
+  @@map("menu_categories")
+}

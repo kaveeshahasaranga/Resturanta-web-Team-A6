@@ -44,7 +44,7 @@ export default function CheckoutPage() {
         items:  items.map(i => ({ menuItemId: i.id, quantity: i.quantity })),
       });
       clearCart();
-      navigate(`/order-confirmation/${res.data.id}`);
+      navigate(`/order-confirmation/${res.data.id}`, { state: { order: res.data } });
     } catch (err) {
       setError(err.message);
     } finally {

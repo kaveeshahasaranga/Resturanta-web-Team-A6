@@ -18,6 +18,7 @@ export default function MenuPage() {
   const [search,   setSearch]   = useState('');
 
   useEffect(() => {
+    let active = true;
     const fetchMenu = async () => {
       setLoading(true);
       setError(null);
@@ -26,15 +27,15 @@ export default function MenuPage() {
         const res = await menuApi.getAll(params);
         // Backend may return { data: [...] } or plain array
         const list = Array.isArray(res) ? res : (res.data ?? res);
-        setItems(list);
+        if (active) setItems(list);
       } catch (err) {
-        setItems([]);
-        setError(err.message);
+        if (active) { setItems([]); setError(err.message); }
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     };
     fetchMenu();
+    return () => { active = false; };
   }, [category]);
 
   const filtered = items.filter(item => {

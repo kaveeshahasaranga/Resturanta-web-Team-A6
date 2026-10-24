@@ -1,5 +1,5 @@
 import { cartApi } from '../services/api.js';
-import { createContext, useContext, useReducer, useCallback, useState, useEffect } from 'react';
+import { createContext, useContext, useReducer, useCallback, useState, useEffect, useRef } from 'react';
 
 const CartContext = createContext(null);
 
@@ -51,16 +51,21 @@ export function CartProvider({ children }) {
   const [quoteError, setQuoteError] = useState('');
   const [checking, setChecking] = useState(false);
   const signature = JSON.stringify(state.items.map(i => ({ menuItemId: i.id, quantity: i.quantity })));
+  const latestSignature = useRef(signature);
+  latestSignature.current = signature;
+  const requestVersion = useRef(0);
   useEffect(() => { localStorage.setItem('fuchsius_cart', JSON.stringify(state.items)); }, [state.items]);
   const refreshCart = useCallback(async () => {
-    if (signature === '[]') { setQuote(null); return null; }
+    const version = ++requestVersion.current;
+    if (signature === '[]') { setQuote(null); setQuoteError(''); setChecking(false); return null; }
     setChecking(true); setQuoteError('');
     try {
       const res = await cartApi.quote(JSON.parse(signature));
+      if (version !== requestVersion.current || latestSignature.current !== signature) return null;
       setQuote({ ...res.data, signature }); dispatch({ type: 'SYNC', payload: res.data.items });
       return res.data;
-    } catch (err) { setQuoteError(err.message); setQuote(null); throw err; }
-    finally { setChecking(false); }
+    } catch (err) { if (version === requestVersion.current && latestSignature.current === signature) { setQuoteError(err.message); setQuote(null); } throw err; }
+    finally { if (version === requestVersion.current) setChecking(false); }
   }, [signature]);
   useEffect(() => {
     refreshCart().catch(() => {});

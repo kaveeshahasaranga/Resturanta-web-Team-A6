@@ -54,7 +54,7 @@ export default function SignInAdminCard({ onSwitchToCustomer, onSwitchToForgotPa
 
       {/* ─── Notification Toast ─── */}
       {toast && (
-        <div className="mb-5 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs flex items-center gap-2 animate-slide-down">
+        <div className="mb-5 p-3 rounded-lg bg-orange-500/10 border border-orange-500/30 text-orange-300 text-xs flex items-center gap-2 animate-slide-down">
           <Check className="w-4 h-4 shrink-0" />
           <span>{toast.message}</span>
         </div>

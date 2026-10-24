@@ -71,7 +71,7 @@ app.use((err, req, res, _next) => {
   if (err.code === 'P2003') return res.status(409).json({ success: false, message: 'Category is used by menu items. Reassign all items, including archived dishes, before deleting it.' });
   if (err.name === 'MulterError') return res.status(400).json({ success: false, message: err.code === 'LIMIT_FILE_SIZE' ? 'Image must be smaller than 5 MB' : err.message });
   console.error(`[ERROR] ${err.message}`);
-  res.status(err.statusCode || 500).json({
+  res.status(err.statusCode || err.status || 500).json({
     success: false,
     message: err.statusCode || err.status ? err.message : 'Internal Server Error',
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),

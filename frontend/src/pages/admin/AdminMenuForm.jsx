@@ -45,7 +45,7 @@ function ImageZone({ value, onChange, onFile }) {
 
 const EMPTY = {
   name: '', description: '', price: '',
-  category: 'MAIN_COURSE', image: '', isAvailable: true,
+  category: '', image: '', isAvailable: true,
 };
 
 export default function AdminMenuForm() {
@@ -161,11 +161,13 @@ export default function AdminMenuForm() {
                 <div>
                   <FieldLabel required>GASTRONOMY CATEGORY</FieldLabel>
                   <select
+                    required
                     name="category"
                     value={form.category}
                     onChange={handleChange}
                     className={`${inputCls} appearance-none cursor-pointer`}
                   >
+                    <option value="">Select a category</option>
                     {categories.map(({ code: value, name: label }) => (
                       <option key={value} value={value}>{label}</option>
                     ))}
