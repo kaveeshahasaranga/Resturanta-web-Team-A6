@@ -1,16 +1,19 @@
 import {
   ArrowLeft,
   ArrowRight,
+  ChefHat,
   Clock3,
   Flame,
+  Loader2,
   MapPin,
   Star,
 } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
-import chefs from '../../data/chefs.json';
+import chefProfiles from '../../data/chefs.json';
 import Footer from '../../components/layout/Footer.jsx';
 import Navbar from '../../components/layout/Navbar.jsx';
+import { chefApi } from '../../services/api.js';
 
 function SectionHeading({ eyebrow, children, id }) {
   return (
@@ -21,14 +24,105 @@ function SectionHeading({ eyebrow, children, id }) {
   );
 }
 
+function chefSlug(name) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+function chefProfile(record) {
+  const details = chefProfiles.find(profile => chefSlug(profile.name) === chefSlug(record.name));
+  const [firstName, ...lastName] = record.name.trim().split(/\s+/);
+  const biography = record.bio.split(/\n\s*\n/).map(paragraph => paragraph.trim()).filter(Boolean);
+
+  return {
+    ...details,
+    id: String(record.id),
+    name: record.name,
+    firstName,
+    lastName: lastName.join(' '),
+    role: record.title,
+    title: record.title,
+    image: record.image,
+    biography: biography.length ? biography : [record.bio],
+    specialty: record.specialty,
+    specialtyDescription: details?.specialtyDescription || '',
+    experience: details?.experience || '',
+    experienceDescription: details?.experienceDescription || '',
+    expertise: details?.expertise || [record.specialty],
+    dishes: details?.dishes || [],
+    quote: details?.quote || record.bio,
+    venue: details?.venue || 'FUCHSIUS Culinary Hearth',
+  };
+}
+
 export default function ChefDetailPage() {
   const { chefId } = useParams();
-  const chefIndex = chefId ? chefs.findIndex((item) => item.id === chefId) : 0;
+  const [chefs, setChefs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setError('');
+
+    chefApi.getAll()
+      .then(response => {
+        if (active) setChefs(Array.isArray(response.data) ? response.data.map(chefProfile) : []);
+      })
+      .catch(err => {
+        if (active) setError(err.message);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => { active = false; };
+  }, []);
+
+  const chefIndex = chefId
+    ? chefs.findIndex(item => item.id === chefId || chefSlug(item.name) === chefId)
+    : 0;
   const chef = chefs[chefIndex];
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [chefId]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen flex-col bg-[#0d0c0b] text-[#f3eee8]">
+        <Navbar />
+        <main className="flex flex-1 items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-orange-400" aria-label="Loading chefs" />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen flex-col bg-[#0d0c0b] text-[#f3eee8]">
+        <Navbar />
+        <main className="flex flex-1 items-center justify-center px-4 text-center">
+          <p role="alert" className="text-red-400">{error}</p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (chefs.length === 0) {
+    return (
+      <div className="flex min-h-screen flex-col bg-[#0d0c0b] text-[#f3eee8]">
+        <Navbar />
+        <main className="flex flex-1 items-center justify-center px-4 text-center text-neutral-400">
+          No chef profiles are available yet.
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!chef) {
     return <Navigate to="/chefs" replace />;
@@ -54,23 +148,29 @@ export default function ChefDetailPage() {
 
         <section className="grid gap-10 py-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14 lg:py-10">
           <div className="relative min-h-[480px] overflow-hidden rounded border border-white/10 sm:min-h-[620px]">
-            <img
-              src={chef.image}
-              alt={`Chef ${chef.name} in the kitchen`}
-              className="absolute inset-0 h-full w-full object-cover"
-            />
+            {chef.image ? (
+              <img
+                src={chef.image}
+                alt={`Chef ${chef.name} in the kitchen`}
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            ) : (
+              <div className="absolute inset-0 grid place-items-center bg-neutral-900">
+                <ChefHat className="h-20 w-20 text-orange-400/60" aria-hidden="true" />
+              </div>
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
             <div className="absolute inset-x-5 bottom-5 flex flex-wrap items-end justify-between gap-4 sm:inset-x-6 sm:bottom-6">
               <div>
-                <p className="mb-1 text-[10px] uppercase tracking-[0.2em] text-orange-400">
-                  {chef.role} · Since {chef.since}
-                </p>
+                <p className="mb-1 text-[10px] uppercase tracking-[0.2em] text-orange-400">{chef.role}</p>
                 <p className="font-serif text-lg font-semibold">{chef.venue}</p>
               </div>
-              <span className="inline-flex items-center gap-1.5 rounded border border-white/15 bg-black/70 px-3 py-2 text-xs">
-                <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" aria-hidden="true" />
-                {chef.rating} · {chef.tastings} tastings
-              </span>
+              {chef.rating && chef.tastings && (
+                <span className="inline-flex items-center gap-1.5 rounded border border-white/15 bg-black/70 px-3 py-2 text-xs">
+                  <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" aria-hidden="true" />
+                  {chef.rating} · {chef.tastings} tastings
+                </span>
+              )}
             </div>
           </div>
 
@@ -87,8 +187,7 @@ export default function ChefDetailPage() {
 
             <h1 className="mt-5 font-serif text-5xl font-semibold leading-[1.02] sm:text-6xl">
               {chef.firstName}
-              <br />
-              <em className="text-orange-400">{chef.lastName}</em>
+              {chef.lastName && <><br /><em className="text-orange-400">{chef.lastName}</em></>}
             </h1>
             <p className="mt-4 text-xs uppercase tracking-[0.2em] text-amber-400">{chef.title}</p>
 
@@ -108,16 +207,18 @@ export default function ChefDetailPage() {
                   Specialty
                 </p>
                 <h2 className="mt-2 font-serif text-xl">{chef.specialty}</h2>
-                <p className="mt-1 text-xs text-neutral-400">{chef.specialtyDescription}</p>
+                {chef.specialtyDescription && <p className="mt-1 text-xs text-neutral-400">{chef.specialtyDescription}</p>}
               </article>
-              <article className="rounded border border-white/10 bg-white/[0.035] p-5">
+              {chef.experience && (
+                <article className="rounded border border-white/10 bg-white/[0.035] p-5">
                 <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-neutral-400">
                   <Clock3 className="h-4 w-4 text-orange-400" aria-hidden="true" />
                   Experience
                 </p>
                 <h2 className="mt-2 font-serif text-xl">{chef.experience}</h2>
                 <p className="mt-1 text-xs text-neutral-400">{chef.experienceDescription}</p>
-              </article>
+                </article>
+              )}
             </div>
 
             <div className="mt-7">
@@ -159,7 +260,7 @@ export default function ChefDetailPage() {
           </div>
         </section>
 
-        <section aria-labelledby="signature-creations">
+        {chef.dishes.length > 0 && <section aria-labelledby="signature-creations">
           <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
             <SectionHeading eyebrow="From the Hearth" id="signature-creations">
               Signature Creations
@@ -186,7 +287,7 @@ export default function ChefDetailPage() {
               </article>
             ))}
           </div>
-        </section>
+        </section>}
 
         <blockquote className="my-16 rounded border border-white/10 border-l-2 border-l-orange-500 bg-gradient-to-r from-orange-500/[0.08] to-transparent px-6 py-9 sm:px-12">
           <p className="max-w-4xl font-serif text-2xl italic leading-relaxed sm:text-[27px]">
@@ -213,7 +314,7 @@ export default function ChefDetailPage() {
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded border border-white/15 text-amber-400">
                 <ArrowLeft className="h-4 w-4" aria-hidden="true" />
               </span>
-              <img src={previousChef.image} alt="" className="h-14 w-14 rounded-full border border-white/15 object-cover" />
+              {previousChef.image && <img src={previousChef.image} alt="" className="h-14 w-14 rounded-full border border-white/15 object-cover" />}
               <div>
                 <p className="text-[10px] uppercase tracking-[0.18em] text-neutral-400">Previous Chef</p>
                 <p className="font-serif text-lg">{previousChef.name}</p>
@@ -228,7 +329,7 @@ export default function ChefDetailPage() {
                 <p className="text-[10px] uppercase tracking-[0.18em] text-neutral-400">Next Chef</p>
                 <p className="font-serif text-lg">{nextChef.name}</p>
               </div>
-              <img src={nextChef.image} alt="" className="h-14 w-14 rounded-full border border-white/15 object-cover" />
+              {nextChef.image && <img src={nextChef.image} alt="" className="h-14 w-14 rounded-full border border-white/15 object-cover" />}
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded border border-white/15 text-amber-400">
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </span>
@@ -247,7 +348,9 @@ export default function ChefDetailPage() {
                     : 'border-white/10'
                 }`}
               >
-                <img src={item.image} alt="" className="h-36 w-full object-cover sm:h-40" />
+                {item.image
+                  ? <img src={item.image} alt="" className="h-36 w-full object-cover sm:h-40" />
+                  : <div className="grid h-36 place-items-center bg-neutral-900 sm:h-40"><ChefHat className="h-10 w-10 text-orange-400/60" aria-hidden="true" /></div>}
                 <div className="p-3">
                   <h3 className="font-serif text-sm font-semibold">{item.name}</h3>
                   <p className="mt-1 text-[11px] text-neutral-400">{item.role}</p>
