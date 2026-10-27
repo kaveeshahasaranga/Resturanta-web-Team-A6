@@ -25,14 +25,18 @@ model User {
 }
 
 model Chef {
-  id        Int      @id @default(autoincrement())
-  name      String
-  title     String
-  bio       String
-  specialty String
-  image     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  role        String   @default("HEARTH MASTER")
+  name        String
+  title       String
+  subtitle    String?
+  bio         String
+  specialty   String
+  image       String?
+  badge       String?
+  isPublic    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@map("chefs")
 }
@@ -56,16 +60,16 @@ model MenuItem {
 }
 
 model Order {
-  id              Int         @id @default(autoincrement())
+  id              Int      @id @default(autoincrement())
   customerName    String
   customerEmail   String
   customerPhone   String?
   deliveryAddress String?
   total           Decimal
-  status          String      @default("PENDING")
+  status          String   @default("PENDING")
   notes           String?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   userId Int?
   user   User? @relation(fields: [userId], references: [id])
@@ -76,7 +80,7 @@ model Order {
 }
 
 model OrderItem {
-  id         Int     @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   quantity   Int
   unitPrice  Decimal
   totalPrice Decimal
@@ -101,13 +105,76 @@ model ContactMessage {
 }
 
 model MenuCategory {
-  id          Int        @id @default(autoincrement())
-  code        String     @unique
+  id          Int      @id @default(autoincrement())
+  code        String   @unique
   name        String
   description String?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   items       MenuItem[]
 
   @@map("menu_categories")
+}
+
+model PageContent {
+  id          Int      @id @default(autoincrement())
+  section     String   @unique
+  title       String?
+  description String?
+  extraData   String?
+  updatedAt   DateTime @updatedAt
+
+  @@map("page_contents")
+}
+
+
+model AboutContent {
+  id               Int      @id @default(autoincrement())
+  section1Visible  Boolean  @default(true)
+  heroSubNarrative String   
+  heroImage        String?
+  activeAmbience   String   @default("chimney")
+  
+  // Bottom Call To Action Banner
+  bannerLive       Boolean  @default(true)
+  bannerHeadline   String
+  bannerSubtext    String   
+  ctaButtonLabel   String
+  targetRoute      String
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("about_content")
+}
+
+model CulinaryPillar {
+  id           Int     @id @default(autoincrement())
+  pillarNumber String  // "01", "02", "03"
+  title        String
+  eyebrow      String
+  description  String  
+  subText1     String
+  subText2     String
+  icon         String  // "flame", "pot", "spice"
+  isActive     Boolean @default(true)
+
+  @@map("culinary_pillars")
+}
+
+model FooterContent {
+  id              Int      @id @default(autoincrement())
+  brandName       String   @default("PRANEETHA")
+  tagline         String   
+  address         String   
+  phone           String   
+  email           String   
+  hours           String   
+  copyright       String   
+  facebookUrl     String?
+  instagramUrl    String?
+  tripAdvisorUrl  String?
+  updatedAt       DateTime @updatedAt
+
+  @@map("footer_content")
 }
