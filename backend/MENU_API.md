@@ -40,6 +40,22 @@ Responses are `{success:true,data:...}` or `{success:false,message:...}` with ap
 | POST | `/api/orders` | Create order at current database prices | Public/optional login |
 | GET | `/api/orders` | List orders | Admin |
 
+### Chefs and restaurant information
+
+| Method | Endpoint | Purpose | Access |
+| --- | --- | --- | --- |
+| GET | `/api/chefs` | List chefs | Public |
+| GET | `/api/chefs/:id` | Get chef details | Public |
+| POST | `/api/chefs` | Add a chef | Admin |
+| PUT | `/api/chefs/:id` | Update a chef | Admin |
+| DELETE | `/api/chefs/:id` | Delete a chef | Admin |
+| POST | `/api/contact` | Submit a contact message `{name,email,message}` | Public |
+| GET | `/api/contact` | List contact messages | Admin |
+| PATCH | `/api/contact/:id/read` | Mark a message as read | Admin |
+| DELETE | `/api/contact/:id` | Delete a contact message | Admin |
+| GET | `/api/contact/info` | Retrieve restaurant name, address, email, and phone | Public |
+| GET | `/api/contact/location` | Retrieve restaurant address and Google Maps search URL | Public |
+
 Category codes start with a letter and contain uppercase letters, numbers or underscores (max 64 characters). Categories referenced by dishes, including archived dishes, cannot be deleted; reassign those records first.
 
 Image uploads accept PNG/JPEG/WebP with signature checks and a 5 MB limit. Files have generated names and live under `backend/uploads/menu/`, served at `/uploads/menu/`. Replaced/removed uploads are deleted. Retain this directory on persistent storage in deployment. Existing `/images/` paths and HTTP(S) image URLs are also supported. Base64 and SVG uploads are rejected.
