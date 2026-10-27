@@ -20,6 +20,20 @@ export const protect = (req, res, next) => {
   }
 };
 
+// Allow guest checkout while attaching a verified user when a token is present.
+export const optionalAuth = (req, res, next) => {
+  const token = req.headers.authorization?.startsWith('Bearer ')
+    ? req.headers.authorization.split(' ')[1]
+    : null;
+  if (!token) return next();
+  try {
+    req.user = jwt.verify(token, process.env.JWT_SECRET);
+    next();
+  } catch {
+    res.status(401).json({ success: false, message: 'Invalid or expired token' });
+  }
+};
+
 /**
  * Middleware: restrict access to ADMIN role only
  */

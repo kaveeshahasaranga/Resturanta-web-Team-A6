@@ -23,6 +23,10 @@ export default function OrderConfirmationPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    if (location.state?.order) {
+      setLoading(false);
+      return undefined;
+    }
     let active = true;
     orderApi.getById(orderId)
       .then((response) => {

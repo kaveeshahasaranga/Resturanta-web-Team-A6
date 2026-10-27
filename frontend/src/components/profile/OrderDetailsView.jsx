@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { orderApi } from '../../services/api.js';
 import {
   ArrowLeft,
   UtensilsCrossed,
@@ -12,6 +13,18 @@ import {
 
 export default function OrderDetailsView({ orderId = '#ORD-1048', onBack, onReorder }) {
   const [reorderStatus, setReorderStatus] = useState(false);
+  const [liveOrder, setLiveOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+    orderApi.getMineById(orderId)
+      .then(response => { if (active) setLiveOrder(response.data); })
+      .catch(err => { if (active) setError(err.message || 'Could not load this order.'); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [orderId]);
 
   const ordersDictionary = {
     '#ORD-1048': {
@@ -182,7 +195,34 @@ export default function OrderDetailsView({ orderId = '#ORD-1048', onBack, onReor
     },
   };
 
-  const orderDetails = ordersDictionary[orderId] || ordersDictionary['#ORD-1048'];
+  const formatMoney = amount => `LKR ${Number(amount || 0).toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const orderDetails = liveOrder ? {
+    id: `#${liveOrder.id}`,
+    placedDate: new Date(liveOrder.createdAt).toLocaleString(),
+    kitchen: 'FUCHSIUS Restaurant',
+    status: liveOrder.status,
+    coursesCount: `${liveOrder.items?.length || 0} ITEMS`,
+    items: (liveOrder.items || []).map(item => ({
+      id: item.id,
+      name: item.menuItem?.name || 'Menu item',
+      categoryTag: item.menuItem?.category?.name || 'Menu',
+      description: item.menuItem?.description || '',
+      qty: item.quantity,
+      unitPrice: formatMoney(item.unitPrice),
+      totalPrice: formatMoney(item.totalPrice),
+      image: item.menuItem?.image || '/images/dishes/chicken-kottu.jpg',
+    })),
+    patronName: liveOrder.customerName,
+    phone: liveOrder.customerPhone || 'Not provided',
+    email: liveOrder.customerEmail,
+    address: liveOrder.deliveryAddress || 'Pickup / confirm with our team',
+    courier: 'Restaurant delivery team',
+    subtotal: formatMoney(liveOrder.total),
+    deliveryFee: 'Not itemized',
+    tax: 'Not itemized',
+    totalSettled: formatMoney(liveOrder.total),
+    cardLast4: 'Not provided',
+  } : ordersDictionary[orderId] || ordersDictionary['#ORD-1048'];
 
   const handleReorder = () => {
     if (onReorder) {
@@ -191,6 +231,14 @@ export default function OrderDetailsView({ orderId = '#ORD-1048', onBack, onReor
     setReorderStatus(true);
     setTimeout(() => setReorderStatus(false), 3000);
   };
+
+  if (loading || error || !liveOrder) {
+    return <div className="space-y-5 animate-fade-in">
+      <button onClick={onBack} className="text-xs font-semibold tracking-wider uppercase text-neutral-400 hover:text-white">← Back to my orders</button>
+      {loading && <p className="text-sm text-neutral-400">Loading order details…</p>}
+      {error && <p className="rounded-lg border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-300">{error}</p>}
+    </div>;
+  }
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -228,15 +276,15 @@ export default function OrderDetailsView({ orderId = '#ORD-1048', onBack, onReor
 
         {/* Status Badge */}
         <div>
-          {orderDetails.status === 'PREPARING' ? (
+          {['PENDING', 'CONFIRMED', 'PREPARING', 'READY'].includes(orderDetails.status) ? (
             <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase bg-orange-500/10 text-orange-400 border border-orange-500/20">
               <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
-              <span>PREPARING</span>
+              <span>{orderDetails.status}</span>
             </span>
           ) : (
             <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
               <span className="w-2 h-2 rounded-full bg-emerald-400" />
-              <span>COMPLETED</span>
+              <span>{orderDetails.status}</span>
             </span>
           )}
         </div>
@@ -387,7 +435,7 @@ export default function OrderDetailsView({ orderId = '#ORD-1048', onBack, onReor
           <div>
             <div className="flex items-center justify-between pb-4 border-b border-white/[0.08]">
               <h3 className="font-serif text-xl text-white">
-                Payment & Folio Summary
+                Order Summary
               </h3>
               <FileText className="w-5 h-5 text-neutral-400" />
             </div>
@@ -399,14 +447,14 @@ export default function OrderDetailsView({ orderId = '#ORD-1048', onBack, onReor
               </div>
 
               <div className="flex justify-between items-center text-neutral-400">
-                <span>Delivery Courier</span>
+                  <span>Additional charges</span>
                 <span className="text-[#e66200] font-semibold tracking-wider uppercase">
                   {orderDetails.deliveryFee}
                 </span>
               </div>
 
               <div className="flex justify-between items-center text-neutral-400">
-                <span>Taxes & Service Charge</span>
+                <span>Taxes & service charge</span>
                 <span className="text-white">{orderDetails.tax}</span>
               </div>
             </div>
@@ -415,7 +463,7 @@ export default function OrderDetailsView({ orderId = '#ORD-1048', onBack, onReor
             <div className="mt-6 bg-[#1a191e] border border-white/[0.08] rounded-xl p-4 sm:p-5 flex items-center justify-between">
               <div>
                 <p className="text-[11px] font-semibold text-neutral-300 tracking-wider uppercase font-sans">
-                  TOTAL SETTLED
+                  ORDER TOTAL
                 </p>
                 <p className="text-[11px] text-neutral-500 font-sans mt-0.5">
                   Currency: LKR
@@ -431,10 +479,10 @@ export default function OrderDetailsView({ orderId = '#ORD-1048', onBack, onReor
           <div className="pt-3 border-t border-white/[0.08] flex items-center justify-between text-xs font-sans">
             <div className="flex items-center gap-2 text-neutral-300">
               <CreditCard className="w-4 h-4 text-neutral-400" />
-              <span>Paid via Visa ending in • • • • {orderDetails.cardLast4}</span>
+              <span>Payment details are confirmed by the restaurant.</span>
             </div>
             <span className="text-emerald-400 font-semibold text-[11px] tracking-wider uppercase">
-              VERIFIED
+              {orderDetails.status}
             </span>
           </div>
         </div>

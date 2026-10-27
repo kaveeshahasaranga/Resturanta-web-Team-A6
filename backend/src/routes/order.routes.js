@@ -1,9 +1,34 @@
 import { Router } from 'express';
+import { adminOnly, optionalAuth, protect } from '../middleware/auth.middleware.js';
 
 const router = Router();
+const orderInclude = { items: { include: { menuItem: { include: { category: true } } } } };
+
+// GET /api/orders/mine — current customer's order history.
+router.get('/mine', protect, async (req, res, next) => {
+  try {
+    const orders = await req.prisma.order.findMany({
+      where: { userId: req.user.id },
+      include: orderInclude,
+      orderBy: { createdAt: 'desc' },
+    });
+    res.json({ success: true, data: orders, count: orders.length });
+  } catch (err) { next(err); }
+});
+
+// GET /api/orders/mine/:id — one order from the signed-in customer's history.
+router.get('/mine/:id', protect, async (req, res, next) => {
+  try {
+    const id = /^\d+$/.test(String(req.params.id)) ? Number(req.params.id) : null;
+    if (id === null) return res.status(400).json({ success: false, message: 'Order id must be a positive integer' });
+    const order = await req.prisma.order.findFirst({ where: { id, userId: req.user.id }, include: orderInclude });
+    if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+    res.json({ success: true, data: order });
+  } catch (err) { next(err); }
+});
 
 // ─── GET /api/orders ─────────────────────────────────────────────────────────
-router.get('/', async (req, res, next) => {
+router.get('/', protect, adminOnly, async (req, res, next) => {
   try {
     const { status } = req.query;
     const where = status ? { status: status.toUpperCase() } : {};
@@ -17,11 +42,14 @@ router.get('/', async (req, res, next) => {
 });
 
 // ─── GET /api/orders/:id ─────────────────────────────────────────────────────
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', optionalAuth, async (req, res, next) => {
   try {
+    const id = /^\d+$/.test(String(req.params.id)) ? Number(req.params.id) : null;
+    if (id === null) return res.status(400).json({ success: false, message: 'Order id must be a positive integer' });
+    if (!req.user) return res.status(401).json({ success: false, message: 'Sign in to view this order' });
     const order = await req.prisma.order.findUnique({
-      where: { id: +req.params.id },
-      include: { items: { include: { menuItem: { include: { category: true } } } } },
+      where: { id, ...(req.user.role === 'ADMIN' ? {} : { userId: req.user.id }) },
+      include: orderInclude,
     });
     if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
     res.json({ success: true, data: order });
@@ -30,9 +58,9 @@ router.get('/:id', async (req, res, next) => {
 
 // ─── POST /api/orders ────────────────────────────────────────────────────────
 // Body: { customerName, customerEmail, customerPhone?, deliveryAddress?, notes?, items: [{menuItemId, quantity}] }
-router.post('/', async (req, res, next) => {
+router.post('/', optionalAuth, async (req, res, next) => {
   try {
-    const { customerName, customerEmail, customerPhone, deliveryAddress, notes, items, userId, voucherCode } = req.body;
+    const { customerName, customerEmail, customerPhone, deliveryAddress, notes, items, voucherCode } = req.body;
     if (!customerName?.trim() || !customerEmail?.trim() || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ success: false, message: 'customerName, customerEmail, and items are required' });
     }
@@ -69,7 +97,7 @@ router.post('/', async (req, res, next) => {
     const order = await req.prisma.order.create({
       data: {
         customerName, customerEmail, customerPhone, deliveryAddress, notes, total,
-        userId: userId || null,
+        userId: req.user?.id ?? null,
         items: { create: orderItems },
       },
       include: { items: { include: { menuItem: { include: { category: true } } } } },
@@ -80,7 +108,7 @@ router.post('/', async (req, res, next) => {
 });
 
 // ─── PATCH /api/orders/:id/status ────────────────────────────────────────────
-router.patch('/:id/status', async (req, res, next) => {
+router.patch('/:id/status', protect, adminOnly, async (req, res, next) => {
   try {
     const { status } = req.body;
     const validStatuses = ['PENDING','CONFIRMED','PREPARING','READY','DELIVERED','CANCELLED'];
@@ -96,7 +124,7 @@ router.patch('/:id/status', async (req, res, next) => {
 });
 
 // ─── DELETE /api/orders/:id ──────────────────────────────────────────────────
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', protect, adminOnly, async (req, res, next) => {
   try {
     await req.prisma.order.delete({ where: { id: +req.params.id } });
     res.json({ success: true, message: 'Order deleted successfully' });

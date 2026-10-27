@@ -17,7 +17,10 @@ const StatCard = ({ icon: Icon, label, value, color = 'text-fuchsiusOrange' }) =
 const MOCK_STATS = {
   totalOrders:    24,
   totalRevenue:   '18450.00',
+  averageOrderValue: '768.75',
   pendingOrders:  5,
+  todayOrders:    3,
+  orderCountsByStatus: {},
   totalMenuItems: 6,
   unreadMessages: 3,
 };
@@ -51,15 +54,19 @@ export default function AdminDashboard() {
           ))}
         </div>
       ) : stats ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
           <StatCard icon={ShoppingBag}     label="Total Orders"   value={stats.totalOrders}    />
-          <StatCard icon={DollarSign}      label="Total Revenue"  value={`Rs ${parseFloat(stats.totalRevenue).toFixed(2)}`} color="text-green-400" />
+          <StatCard icon={DollarSign}      label="Revenue (excl. cancelled)"  value={`LKR ${Number(stats.totalRevenue).toLocaleString('en-LK', { minimumFractionDigits: 2 })}`} color="text-green-400" />
           <StatCard icon={TrendingUp}      label="Pending Orders" value={stats.pendingOrders}  color="text-yellow-400" />
+          <StatCard icon={ShoppingBag}     label="Orders Today"   value={stats.todayOrders ?? 0} color="text-purple-400" />
+          <StatCard icon={DollarSign}      label="Average Order" value={`LKR ${Number(stats.averageOrderValue || 0).toLocaleString('en-LK', { minimumFractionDigits: 2 })}`} color="text-cyan-400" />
           <StatCard icon={UtensilsCrossed} label="Menu Items"     value={stats.totalMenuItems} color="text-blue-400" />
         </div>
       ) : (
         <p className="text-red-400">Failed to load stats.</p>
       )}
+
+      {!loading && stats?.orderCountsByStatus && <div className="mt-5 card"><h2 className="font-semibold text-gray-300 mb-3">Order Summary</h2><div className="flex flex-wrap gap-2">{['PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'DELIVERED', 'CANCELLED'].map(status => <span key={status} className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-gray-300">{status}: <strong className="text-white">{stats.orderCountsByStatus[status] || 0}</strong></span>)}</div></div>}
 
       <div className="mt-8 card">
         <h2 className="font-semibold text-gray-300 mb-2">Quick Actions</h2>

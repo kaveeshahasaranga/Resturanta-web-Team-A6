@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Loader2, ChevronDown } from 'lucide-react';
-import { orderApi } from '../../services/api.js';
+import { Loader2, ChevronDown, Eye, X } from 'lucide-react';
+import { adminApi } from '../../services/api.js';
 
 const STATUSES = ['PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'DELIVERED', 'CANCELLED'];
 
@@ -13,46 +13,50 @@ const STATUS_BADGE = {
   CANCELLED: 'badge-cancelled',
 };
 
-// ─── Demo orders shown when backend is offline ────────────────────────────────
-const MOCK_ORDERS = [
-  { id: 'ord-001', customerName: 'Ashan Perera',    customerEmail: 'ashan@example.com',   total: '263.00', status: 'PENDING',   createdAt: new Date(Date.now() - 10*60000).toISOString() },
-  { id: 'ord-002', customerName: 'Nimesha Silva',   customerEmail: 'nimesha@example.com', total: '330.00', status: 'PREPARING', createdAt: new Date(Date.now() - 25*60000).toISOString() },
-  { id: 'ord-003', customerName: 'Kasun Fernando',  customerEmail: 'kasun@example.com',   total: '145.00', status: 'CONFIRMED', createdAt: new Date(Date.now() - 45*60000).toISOString() },
-  { id: 'ord-004', customerName: 'Dilani Jayawardena', customerEmail: 'dilani@example.com', total: '448.00', status: 'DELIVERED', createdAt: new Date(Date.now() - 2*3600000).toISOString() },
-  { id: 'ord-005', customerName: 'Thilina Bandara', customerEmail: 'thilina@example.com', total: '78.00',  status: 'READY',     createdAt: new Date(Date.now() - 15*60000).toISOString() },
-];
-
 export default function AdminOrdersPage() {
   const [orders,  setOrders]  = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter,  setFilter]  = useState('ALL');
+  const [error, setError] = useState('');
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [detailLoading, setDetailLoading] = useState(false);
 
   useEffect(() => {
     const params = filter !== 'ALL' ? `?status=${filter}` : '';
     setLoading(true);
-    orderApi.getAll(params)
+    setError('');
+    adminApi.getOrders(params)
       .then(res => {
-        const list = Array.isArray(res) ? res : (res.data ?? res);
-        setOrders(list.length > 0 ? list : MOCK_ORDERS);
+        setOrders(res.data || []);
       })
-      .catch(() => {
-        // Backend offline — filter mock data by status
-        const filtered = filter === 'ALL'
-          ? MOCK_ORDERS
-          : MOCK_ORDERS.filter(o => o.status === filter);
-        setOrders(filtered);
-      })
+      .catch(err => { setOrders([]); setError(err.message || 'Could not load orders.'); })
       .finally(() => setLoading(false));
   }, [filter]);
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
-      const updated = await orderApi.updateStatus(orderId, newStatus);
+      const updated = await adminApi.updateOrderStatus(orderId, newStatus);
       setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: updated.data.status } : o));
+      setSelectedOrder(prev => prev?.id === orderId ? { ...prev, status: updated.data.status } : prev);
     } catch (err) {
       alert(err.message);
     }
   };
+
+  const viewDetails = async orderId => {
+    setSelectedOrder(null);
+    setDetailLoading(true);
+    try {
+      const response = await adminApi.getOrder(orderId);
+      setSelectedOrder(response.data);
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setDetailLoading(false);
+    }
+  };
+
+  const money = amount => `LKR ${Number(amount || 0).toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   return (
     <div className="animate-fade-in">
@@ -81,7 +85,7 @@ export default function AdminOrdersPage() {
           <Loader2 className="w-8 h-8 text-fuchsiusOrange animate-spin" />
         </div>
       ) : orders.length === 0 ? (
-        <p className="text-center text-gray-500 py-16">No orders found.</p>
+        <p className="text-center text-gray-500 py-16">{error || 'No orders found.'}</p>
       ) : (
         <div className="space-y-4">
           {orders.map(order => (
@@ -99,7 +103,7 @@ export default function AdminOrdersPage() {
 
                 <div className="text-right">
                   <p className="text-fuchsiusOrange font-bold text-lg">
-                    ${parseFloat(order.total).toFixed(2)}
+                    {money(order.total)}
                   </p>
                   <p className="text-xs text-gray-500 mt-1">{order.items?.length} item{order.items?.length !== 1 ? 's' : ''}</p>
 
@@ -129,10 +133,23 @@ export default function AdminOrdersPage() {
                   </div>
                 </div>
               )}
+              <button onClick={() => viewDetails(order.id)} className="mt-4 inline-flex items-center gap-2 text-xs font-semibold tracking-wider text-fuchsiusOrange hover:text-orange-300"><Eye size={14} /> VIEW ORDER DETAILS</button>
             </div>
           ))}
         </div>
       )}
+
+      {detailLoading && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"><Loader2 className="animate-spin text-fuchsiusOrange" /></div>}
+      {selectedOrder && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4" role="dialog" aria-modal="true" aria-label={`Order ${selectedOrder.id} details`}>
+        <div className="w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-xl border border-white/10 bg-[#111] p-6">
+          <div className="flex items-start justify-between gap-4"><div><p className="text-xs font-mono text-gray-500">ORDER #{selectedOrder.id}</p><h2 className="mt-1 text-xl font-serif">{selectedOrder.customerName}</h2><p className="text-sm text-gray-400">{selectedOrder.customerEmail} · {selectedOrder.customerPhone || 'No phone'}</p></div><button onClick={() => setSelectedOrder(null)} aria-label="Close details" className="text-gray-400 hover:text-white"><X /></button></div>
+          <p className="mt-3 text-xs text-gray-500">{new Date(selectedOrder.createdAt).toLocaleString()} · {selectedOrder.status}</p>
+          <p className="mt-3 text-sm text-gray-300">{selectedOrder.deliveryAddress || 'Pickup / confirm with customer'}</p>
+          {selectedOrder.notes && <p className="mt-2 text-sm text-gray-400">Notes: {selectedOrder.notes}</p>}
+          <div className="mt-5 divide-y divide-white/10 border-y border-white/10">{selectedOrder.items?.map(item => <div key={item.id} className="flex justify-between gap-4 py-3 text-sm"><span>{item.menuItem?.name || 'Menu item'} × {item.quantity}</span><span>{money(item.totalPrice)}</span></div>)}</div>
+          <div className="mt-4 flex justify-between font-semibold"><span>Order total</span><span className="text-fuchsiusOrange">{money(selectedOrder.total)}</span></div>
+        </div>
+      </div>}
     </div>
   );
 }

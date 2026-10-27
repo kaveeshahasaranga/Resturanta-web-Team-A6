@@ -49,6 +49,8 @@ export const menuApi = {
 export const orderApi = {
   getAll:    (params = '')  => api.get(`/orders${params}`),
   getById:   (id)           => api.get(`/orders/${id}`),
+  getMine:   ()             => api.get('/orders/mine'),
+  getMineById: (id)         => api.get(`/orders/mine/${id}`),
   create:    (data)         => api.post('/orders', data),
   updateStatus: (id, status) => api.patch(`/orders/${id}/status`, { status }),
   delete:    (id)           => api.delete(`/orders/${id}`),
@@ -71,4 +73,7 @@ export const contactApi = {
 
 export const adminApi = {
   dashboard: ()             => api.get('/admin/dashboard'),
+  getOrders: (params = '')   => api.get(`/admin/orders${params}`),
+  getOrder:  (id)            => api.get(`/admin/orders/${id}`),
+  updateOrderStatus: (id, status) => api.patch(`/admin/orders/${id}/status`, { status }),
 };

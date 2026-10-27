@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { orderApi } from '../../services/api.js';
-import { CheckCircle, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import Navbar from '../../components/layout/Navbar.jsx';
 import Footer from '../../components/layout/Footer.jsx';
 
@@ -20,13 +20,9 @@ export default function CheckoutPage() {
     notes:           '',
   });
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
   const [error,   setError]   = useState('');
 
-  const TAX_RATE     = 0.08;
-  const DELIVERY_FEE = 3.99;
-  const tax          = total * TAX_RATE;
-  const grandTotal   = total + tax + DELIVERY_FEE;
+  const formatMoney = amount => `LKR ${Number(amount || 0).toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   const handleChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
 
@@ -36,38 +32,19 @@ export default function CheckoutPage() {
     setLoading(true);
     setError('');
     try {
-      await orderApi.create({
+      const response = await orderApi.create({
         ...form,
-        userId: user?.id || null,
         items:  items.map(i => ({ menuItemId: i.id, quantity: i.quantity })),
       });
+      const order = response.data;
       clearCart();
-      setSuccess(true);
+      navigate(`/order-confirmation/${order.id}`, { state: { order } });
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
-
-  if (success) {
-    return (
-      <div className="min-h-screen flex flex-col bg-fuchsiusBlack">
-        <Navbar />
-        <main className="flex-1 flex items-center justify-center">
-          <div className="text-center px-4 animate-slide-up">
-            <CheckCircle className="w-20 h-20 text-green-400 mx-auto mb-5" />
-            <h1 className="text-3xl font-serif font-bold mb-3">Order Placed!</h1>
-            <p className="text-gray-400 mb-8 max-w-sm mx-auto">
-              Thank you for your order. We'll start preparing it right away!
-            </p>
-            <button onClick={() => navigate('/menu')} className="btn-primary">Back to Menu</button>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex flex-col bg-fuchsiusBlack">
@@ -106,7 +83,7 @@ export default function CheckoutPage() {
 
               <button type="submit" disabled={loading} className="btn-primary w-full flex items-center justify-center gap-2 py-3">
                 {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-                {loading ? 'Placing Order...' : `Place Order • $${grandTotal.toFixed(2)}`}
+                {loading ? 'Placing Order...' : `Place Order • ${formatMoney(total)}`}
               </button>
             </form>
 
@@ -117,16 +94,14 @@ export default function CheckoutPage() {
                 {items.map(i => (
                   <div key={i.id} className="flex justify-between text-gray-400">
                     <span className="truncate pr-2">{i.name} ×{i.quantity}</span>
-                    <span className="text-fuchsiusWhite shrink-0">${(parseFloat(i.price) * i.quantity).toFixed(2)}</span>
+                    <span className="text-fuchsiusWhite shrink-0">{formatMoney(parseFloat(i.price) * i.quantity)}</span>
                   </div>
                 ))}
               </div>
               <div className="border-t border-white/10 pt-3 space-y-2 text-sm text-gray-400">
-                <div className="flex justify-between"><span>Subtotal</span><span>${total.toFixed(2)}</span></div>
-                <div className="flex justify-between"><span>Tax</span><span>${tax.toFixed(2)}</span></div>
-                <div className="flex justify-between"><span>Delivery</span><span>${DELIVERY_FEE.toFixed(2)}</span></div>
+                <div className="flex justify-between"><span>Items subtotal</span><span>{formatMoney(total)}</span></div>
                 <div className="flex justify-between font-bold text-fuchsiusWhite text-base pt-1">
-                  <span>Total</span><span className="text-fuchsiusOrange">${grandTotal.toFixed(2)}</span>
+                  <span>Order total</span><span className="text-fuchsiusOrange">{formatMoney(total)}</span>
                 </div>
               </div>
             </div>
