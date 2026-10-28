@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, Check, AlertCircle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
@@ -13,11 +13,16 @@ export default function SignInCustomerCard({ onSwitchToAdmin, onSwitchToRegister
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
 
+  // Guarantee fields are strictly blank on mount
+  useEffect(() => {
+    setEmail('');
+    setPassword('');
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault(); setLoading(true); setToast(null);
     try {
       const user = await login(email, password);
-      
       navigate('/profile');
     } catch (err) { setToast({ type: 'error', message: err.message }); }
     finally { setLoading(false); }
@@ -61,7 +66,11 @@ export default function SignInCustomerCard({ onSwitchToAdmin, onSwitchToRegister
       )}
 
       {/* ─── Form ─── */}
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-5" autoComplete="off">
+        {/* Hidden inputs to capture aggressive browser autofill */}
+        <input type="text" style={{ display: 'none' }} tabIndex={-1} autoComplete="false" />
+        <input type="password" style={{ display: 'none' }} tabIndex={-1} autoComplete="false" />
+
         {/* Email Address */}
         <div>
           <label className="block text-[11px] font-semibold text-neutral-400 tracking-wider uppercase mb-1.5">
@@ -69,6 +78,9 @@ export default function SignInCustomerCard({ onSwitchToAdmin, onSwitchToRegister
           </label>
           <input
             type="email"
+            name="fuchsius_customer_login_email"
+            id="fuchsius_customer_login_email"
+            autoComplete="off"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your email address"
@@ -94,6 +106,9 @@ export default function SignInCustomerCard({ onSwitchToAdmin, onSwitchToRegister
           <div className="relative">
             <input
               type={showPassword ? 'text' : 'password'}
+              name="fuchsius_customer_login_password"
+              id="fuchsius_customer_login_password"
+              autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••••••"

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, Check, ShieldAlert } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
@@ -12,6 +12,12 @@ export default function SignInAdminCard({ onSwitchToCustomer, onSwitchToForgotPa
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
+
+  // Guarantee fields are strictly blank on mount
+  useEffect(() => {
+    setAdminEmail('');
+    setPassword('');
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault(); setLoading(true); setToast(null);
@@ -61,7 +67,11 @@ export default function SignInAdminCard({ onSwitchToCustomer, onSwitchToForgotPa
       )}
 
       {/* ─── Form ─── */}
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-5" autoComplete="off">
+        {/* Hidden inputs to capture aggressive browser autofill */}
+        <input type="text" style={{ display: 'none' }} tabIndex={-1} autoComplete="false" />
+        <input type="password" style={{ display: 'none' }} tabIndex={-1} autoComplete="false" />
+
         {/* Admin Email */}
         <div>
           <label className="block text-[11px] font-semibold text-neutral-400 tracking-wider uppercase mb-1.5">
@@ -69,6 +79,9 @@ export default function SignInAdminCard({ onSwitchToCustomer, onSwitchToForgotPa
           </label>
           <input
             type="email"
+            name="fuchsius_admin_login_email"
+            id="fuchsius_admin_login_email"
+            autoComplete="off"
             value={adminEmail}
             onChange={(e) => setAdminEmail(e.target.value)}
             placeholder="Enter admin email address"
@@ -94,6 +107,9 @@ export default function SignInAdminCard({ onSwitchToCustomer, onSwitchToForgotPa
           <div className="relative">
             <input
               type={showPassword ? 'text' : 'password'}
+              name="fuchsius_admin_login_password"
+              id="fuchsius_admin_login_password"
+              autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••••••"

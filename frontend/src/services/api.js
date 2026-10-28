@@ -73,6 +73,21 @@ export const adminApi = {
   dashboard: ()             => api.get('/admin/dashboard'),
 };
 
+// ─── Authentication & User Management (Thrishala's Scope) ───────────────────
+export const authApi = {
+  login: (email, password) => api.post('/auth/login', { email, password }),
+  customerLogin: (email, password) => api.post('/auth/customer/login', { email, password }),
+  adminLogin: (email, password) => api.post('/auth/admin/login', { email, password }),
+  register: (name, email, password) => api.post('/auth/register', { name, email, password }),
+  getProfile: () => api.get('/auth/me'),
+  updateProfile: (data) => api.put('/auth/profile', data),
+  changePassword: (currentPassword, newPassword) => api.post('/auth/change-password', { currentPassword, newPassword }),
+  forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
+  adminForgotPassword: (email) => api.post('/auth/admin/forgot-password', { email }),
+  resetPassword: (token, newPassword) => api.post('/auth/reset-password', { token, newPassword }),
+  adminResetPassword: (token, newPassword) => api.post('/auth/admin/reset-password', { token, newPassword }),
+};
+
 export const categoryApi = {
   getAll: () => api.get('/categories'),
   create: data => api.post('/categories', data),

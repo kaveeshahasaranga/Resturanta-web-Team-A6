@@ -1,8 +1,10 @@
 import { Router } from 'express';
+import { protect, adminOnly } from '../middleware/auth.middleware.js';
 
 const router = Router();
 
-router.get('/dashboard', async (req, res, next) => {
+// GET /api/admin/dashboard — aggregate stats (protected with admin access check)
+router.get('/dashboard', protect, adminOnly, async (req, res, next) => {
   try {
     const [totalOrders, totalRevenue, pendingOrders, totalMenuItems, unreadMessages] = await Promise.all([
       req.prisma.order.count(),

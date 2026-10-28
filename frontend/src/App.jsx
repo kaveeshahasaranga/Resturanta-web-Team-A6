@@ -54,11 +54,13 @@ export default function App() {
           <Route path="/customer/profile"              element={<CustomerProfilePage />} />
 
           {/* ── Auth Routes ── */}
-          <Route path="/login"           element={<LoginPage />} />
-          <Route path="/admin-login"     element={<LoginPage />} />
-          <Route path="/register"        element={<RegisterPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/reset-password"  element={<ResetPasswordPage />} />
+          <Route path="/login"                 element={<LoginPage />} />
+          <Route path="/admin-login"           element={<LoginPage />} />
+          <Route path="/register"              element={<RegisterPage />} />
+          <Route path="/forgot-password"       element={<ForgotPasswordPage />} />
+          <Route path="/admin-forgot-password" element={<ForgotPasswordPage isAdmin={true} />} />
+          <Route path="/reset-password"        element={<ResetPasswordPage />} />
+          <Route path="/admin-reset-password"  element={<ResetPasswordPage isAdmin={true} />} />
 
           {/* ── Admin Routes (nested under sidebar layout) ── */}
           <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
