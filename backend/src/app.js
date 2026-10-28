@@ -11,6 +11,8 @@ import orderRoutes       from './routes/order.routes.js';
 import chefRoutes        from './routes/chef.routes.js';
 import contactRoutes     from './routes/contact.routes.js';
 import adminRoutes       from './routes/admin.routes.js';
+import aboutRoutes       from './routes/about.routes.js';
+import footerRoutes      from './routes/footer.routes.js';
 
 // ─── Load env vars ──────────────────────────────────────────────────────────
 dotenv.config();
@@ -52,9 +54,14 @@ app.use('/api/menu',    menuRoutes);
 app.use('/api/orders',  orderRoutes);
 app.use('/api/chefs',   chefRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/about',   aboutRoutes);
+app.use('/api/footer',  footerRoutes);
 app.use('/api/admin',   adminRoutes);
 
-// ─── Health Check ───────────────────────────────────────────────────────────
+// ─── Root & Health Check ────────────────────────────────────────────────────
+app.get('/', (_req, res) => {
+  res.json({ success: true, message: 'FUCHSIUS API is running successfully!' });
+});
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString(), service: 'FUCHSIUS API' });
 });
