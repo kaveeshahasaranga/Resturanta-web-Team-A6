@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { protect, adminOnly } from '../middleware/auth.middleware.js';
 import { fail, id, text } from '../lib/validation.js';
+import { removeChefImage, saveChefImage, upload } from '../lib/images.js';
 
 const router = Router();
 
@@ -17,7 +18,9 @@ function chefData(body, partial = false) {
       data.image = null;
     } else {
       const image = text(body.image, 'Image URL', 191);
-      if (!/^https?:\/\/[^\s]+$/i.test(image) && !/^\/images\/[a-zA-Z0-9_./-]+$/.test(image)) {
+      if (!/^https?:\/\/[^\s]+$/i.test(image)
+        && !/^\/images\/[a-zA-Z0-9_./-]+$/.test(image)
+        && !/^\/uploads\/chefs\/[a-f0-9-]+\.(png|jpg|webp)$/.test(image)) {
         throw fail('Use an HTTP image URL or a path under /images');
       }
       data.image = image;
@@ -56,10 +59,44 @@ router.post('/', protect, adminOnly, async (req, res, next) => {
 // PUT /api/chefs/:id
 router.put('/:id', protect, adminOnly, async (req, res, next) => {
   try {
+    const chefId = id(req.params.id);
+    const old = await req.prisma.chef.findUnique({ where: { id: chefId } });
+    if (!old) throw fail('Chef not found', 404);
+    const data = chefData(req.body, true);
     const chef = await req.prisma.chef.update({
-      where: { id: id(req.params.id) },
-      data: chefData(req.body, true),
+      where: { id: chefId },
+      data,
     });
+    if (data.image !== undefined && data.image !== old.image) await removeChefImage(old.image);
+    res.json({ success: true, data: chef });
+  } catch (err) { next(err); }
+});
+
+// POST /api/chefs/:id/image
+router.post('/:id/image', protect, adminOnly, upload, async (req, res, next) => {
+  let image;
+  try {
+    const chefId = id(req.params.id);
+    const old = await req.prisma.chef.findUnique({ where: { id: chefId } });
+    if (!old) throw fail('Chef not found', 404);
+    image = await saveChefImage(req.file);
+    const chef = await req.prisma.chef.update({ where: { id: chefId }, data: { image } });
+    await removeChefImage(old.image);
+    res.json({ success: true, data: chef });
+  } catch (err) {
+    if (image) await removeChefImage(image);
+    next(err);
+  }
+});
+
+// DELETE /api/chefs/:id/image
+router.delete('/:id/image', protect, adminOnly, async (req, res, next) => {
+  try {
+    const chefId = id(req.params.id);
+    const old = await req.prisma.chef.findUnique({ where: { id: chefId } });
+    if (!old) throw fail('Chef not found', 404);
+    const chef = await req.prisma.chef.update({ where: { id: chefId }, data: { image: null } });
+    await removeChefImage(old.image);
     res.json({ success: true, data: chef });
   } catch (err) { next(err); }
 });
@@ -67,7 +104,8 @@ router.put('/:id', protect, adminOnly, async (req, res, next) => {
 // DELETE /api/chefs/:id
 router.delete('/:id', protect, adminOnly, async (req, res, next) => {
   try {
-    await req.prisma.chef.delete({ where: { id: id(req.params.id) } });
+    const chef = await req.prisma.chef.delete({ where: { id: id(req.params.id) } });
+    await removeChefImage(chef.image);
     res.json({ success: true, message: 'Chef deleted successfully' });
   } catch (err) { next(err); }
 });

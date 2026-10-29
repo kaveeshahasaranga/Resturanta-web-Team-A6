@@ -60,13 +60,29 @@ export const chefApi = {
   create:    (data)         => api.post('/chefs', data),
   update:    (id, data)     => api.put(`/chefs/${id}`, data),
   delete:    (id)           => api.delete(`/chefs/${id}`),
+  uploadImage: (id, file)   => {
+    const body = new FormData();
+    body.append('image', file);
+    const token = localStorage.getItem('fuchsius_token');
+    return safeFetch(`/api/chefs/${id}/image`, {
+      method: 'POST',
+      body,
+      headers: token ? { Authorization: ['Bearer', token].join(' ') } : {},
+    }).then(handleResponse);
+  },
+  removeImage: id           => api.delete(`/chefs/${id}/image`),
 };
 
 export const contactApi = {
   send:      (data)         => api.post('/contact', data),
   getAll:    ()             => api.get('/contact'),
   markRead:  (id)           => api.patch(`/contact/${id}/read`, {}),
+  reply:     (id, reply)    => api.post(`/contact/${id}/reply`, { reply }),
   delete:    (id)           => api.delete(`/contact/${id}`),
+  getInfo:   ()             => api.get('/contact/info'),
+  getLocation: ()           => api.get('/contact/location'),
+  getSettings: ()           => api.get('/contact/settings'),
+  updateSettings: data      => api.put('/contact/settings', data),
 };
 
 export const adminApi = {

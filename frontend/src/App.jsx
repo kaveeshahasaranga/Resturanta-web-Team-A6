@@ -32,6 +32,7 @@ import AdminMenuForm              from './pages/admin/AdminMenuForm.jsx';
 import AdminOrdersPage            from './pages/admin/AdminOrdersPage.jsx';
 import AdminChefsPage             from './pages/admin/AdminChefsPage.jsx';
 import AdminContactPage           from './pages/admin/AdminContactPage.jsx';
+import AdminRestaurantSettingsPage from './pages/admin/AdminRestaurantSettingsPage.jsx';
 
 export default function App() {
   return (
@@ -74,6 +75,7 @@ export default function App() {
             <Route path="orders"        element={<AdminOrdersPage />} />
             <Route path="chefs"         element={<AdminChefsPage />} />
             <Route path="contact"       element={<AdminContactPage />} />
+            <Route path="restaurant"   element={<AdminRestaurantSettingsPage />} />
           </Route>
         </Routes>
       </CartProvider>

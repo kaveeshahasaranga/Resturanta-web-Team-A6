@@ -5,8 +5,9 @@ import { join } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { fail } from './validation.js';
 export const uploadDir = fileURLToPath(new URL('../../uploads/menu/', import.meta.url));
+export const chefUploadDir = fileURLToPath(new URL('../../uploads/chefs/', import.meta.url));
 export const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024, files: 1 } }).single('image');
-export async function saveImage(file) {
+async function saveToDirectory(file, directory, urlPrefix) {
   if (!file) throw fail('Select an image');
   const b = file.buffer;
   let ext;
@@ -15,11 +16,20 @@ export async function saveImage(file) {
   else if (b.toString('ascii', 0, 4) === 'RIFF' && b.toString('ascii', 8, 12) === 'WEBP') ext = 'webp';
   else throw fail('Only JPEG, PNG and WebP images are supported');
   const name = `${randomUUID()}.${ext}`;
-  await mkdir(uploadDir, { recursive: true });
-  await writeFile(join(uploadDir, name), b, { flag: 'wx' });
-  return `/uploads/menu/${name}`;
+  await mkdir(directory, { recursive: true });
+  await writeFile(join(directory, name), b, { flag: 'wx' });
+  return `${urlPrefix}/${name}`;
 }
-export async function removeImage(url) {
-  if (!/^\/uploads\/menu\/[a-f0-9-]+\.(png|jpg|webp)$/.test(url || '')) return;
-  await unlink(join(uploadDir, url.split('/').pop())).catch(err => { if (err.code !== 'ENOENT') console.error('Image cleanup failed:', err.message); });
+
+export const saveImage = file => saveToDirectory(file, uploadDir, '/uploads/menu');
+export const saveChefImage = file => saveToDirectory(file, chefUploadDir, '/uploads/chefs');
+
+async function removeFromDirectory(url, pattern, directory) {
+  if (!pattern.test(url || '')) return;
+  await unlink(join(directory, url.split('/').pop())).catch(err => {
+    if (err.code !== 'ENOENT') console.error('Image cleanup failed:', err.message);
+  });
 }
+
+export const removeImage = url => removeFromDirectory(url, /^\/uploads\/menu\/[a-f0-9-]+\.(png|jpg|webp)$/, uploadDir);
+export const removeChefImage = url => removeFromDirectory(url, /^\/uploads\/chefs\/[a-f0-9-]+\.(png|jpg|webp)$/, chefUploadDir);

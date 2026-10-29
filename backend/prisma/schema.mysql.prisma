@@ -61,17 +61,17 @@ model Chef {
 }
 
 model MenuItem {
-  id          Int          @id @default(autoincrement())
-  name        String
-  description String       @db.Text
-  price       Decimal      @db.Decimal(10, 2)
-  category    String       @db.VarChar(64)
+  id           Int          @id @default(autoincrement())
+  name         String
+  description  String       @db.Text
+  price        Decimal      @db.Decimal(10, 2)
+  category     String       @db.VarChar(64)
   categoryInfo MenuCategory @relation(fields: [category], references: [code], onUpdate: Cascade, onDelete: Restrict)
-  deletedAt   DateTime?
-  image       String?
-  isAvailable Boolean      @default(true)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  deletedAt    DateTime?
+  image        String?
+  isAvailable  Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
   orderItems OrderItem[]
 
@@ -113,14 +113,28 @@ model OrderItem {
 }
 
 model ContactMessage {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   name      String
   email     String
-  message   String   @db.Text
-  isRead    Boolean  @default(false)
-  createdAt DateTime @default(now())
+  message   String    @db.Text
+  reply     String?   @db.Text
+  repliedAt DateTime?
+  isRead    Boolean   @default(false)
+  createdAt DateTime  @default(now())
 
   @@map("contact_messages")
+}
+
+model RestaurantSettings {
+  id        Int      @id @default(1)
+  name      String   @db.VarChar(191)
+  address   String   @db.VarChar(500)
+  email     String   @db.VarChar(191)
+  phone     String   @db.VarChar(50)
+  mapUrl    String?  @db.VarChar(1000)
+  updatedAt DateTime @updatedAt
+
+  @@map("restaurant_settings")
 }
 
 model MenuCategory {

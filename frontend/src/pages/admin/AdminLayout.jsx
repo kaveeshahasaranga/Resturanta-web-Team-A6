@@ -17,6 +17,7 @@ const NAV_ITEMS = [
   { to: '/admin/about-content',label: 'About Content', icon: BookOpen },
   { to: '/admin/chefs',        label: 'Chefs',         icon: ChefHat },
   { to: '/admin/contact',      label: 'Messages',      icon: MessageSquare },
+  { to: '/admin/restaurant',   label: 'Restaurant Info', icon: Settings },
 ];
 
 // ─── Top Admin Bar ────────────────────────────────────────────────────────────

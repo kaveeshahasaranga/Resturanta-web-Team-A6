@@ -49,16 +49,25 @@ Responses are `{success:true,data:...}` or `{success:false,message:...}` with ap
 | POST | `/api/chefs` | Add a chef | Admin |
 | PUT | `/api/chefs/:id` | Update a chef | Admin |
 | DELETE | `/api/chefs/:id` | Delete a chef | Admin |
+| POST | `/api/chefs/:id/image` | Upload or replace a chef image (multipart field `image`) | Admin |
+| DELETE | `/api/chefs/:id/image` | Remove a chef image | Admin |
 | POST | `/api/contact` | Submit a contact message `{name,email,message}` | Public |
 | GET | `/api/contact` | List contact messages | Admin |
 | PATCH | `/api/contact/:id/read` | Mark a message as read | Admin |
+| POST | `/api/contact/:id/reply` | Save an admin reply; the admin frontend provides a `mailto:` draft | Admin |
 | DELETE | `/api/contact/:id` | Delete a contact message | Admin |
 | GET | `/api/contact/info` | Retrieve restaurant name, address, email, and phone | Public |
 | GET | `/api/contact/location` | Retrieve restaurant address and Google Maps search URL | Public |
+| GET | `/api/contact/settings` | Read editable restaurant settings | Admin |
+| PUT | `/api/contact/settings` | Update restaurant contact details and optional Google Maps URL | Admin |
+
+Admin replies are stored with the original contact message; they are not sent automatically. Use the generated email draft to send a saved reply. Chef images are validated PNG/JPEG/WebP files up to 5 MB, stored under `backend/uploads/chefs/`, and served at `/uploads/chefs/`.
+
+The restaurant settings and reply fields are added by the `202610270001_admin_management` migration. Apply it with `npm run db:deploy` before using the new management APIs.
 
 Category codes start with a letter and contain uppercase letters, numbers or underscores (max 64 characters). Categories referenced by dishes, including archived dishes, cannot be deleted; reassign those records first.
 
-Image uploads accept PNG/JPEG/WebP with signature checks and a 5 MB limit. Files have generated names and live under `backend/uploads/menu/`, served at `/uploads/menu/`. Replaced/removed uploads are deleted. Retain this directory on persistent storage in deployment. Existing `/images/` paths and HTTP(S) image URLs are also supported. Base64 and SVG uploads are rejected.
+Menu image uploads accept PNG/JPEG/WebP with signature checks and a 5 MB limit. Files have generated names and live under `backend/uploads/menu/`, served at `/uploads/menu/`. Replaced/removed uploads are deleted. Retain upload directories on persistent storage in deployment. Existing `/images/` paths and HTTP(S) image URLs are also supported. Base64 and SVG uploads are rejected.
 
 Cart quotes return current item details, availability, unit and line prices, `subtotal`, `serviceCharge`, `total`, and `canCheckout`. Quantities are integers from 1–99 per dish; duplicate lines merge. Client prices, totals and user IDs are ignored when creating orders. Orders use a serializable transaction and retain purchased prices. Cart, checkout and orders now share **LKR, 10% service charge, and free delivery**, following the existing cart UI. The old simulated promo field was removed.
 

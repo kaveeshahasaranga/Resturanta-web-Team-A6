@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react';
 import { Flame, Facebook, Instagram, MessageCircle, Music } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { contactApi } from '../../services/api.js';
 
 const EXPLORE_LINKS = [
   { label: 'Home & Philosophy',    to: '/' },
@@ -17,7 +19,21 @@ const SOCIAL_LINKS = [
 ];
 
 export default function Footer() {
+  const [restaurant, setRestaurant] = useState(null);
+  const [contactError, setContactError] = useState('');
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  useEffect(() => {
+    let active = true;
+    Promise.all([contactApi.getInfo(), contactApi.getLocation()])
+      .then(([info, location]) => {
+        if (active) setRestaurant({ ...info.data, mapUrl: location.data.mapUrl });
+      })
+      .catch(error => {
+        if (active) setContactError(error.message);
+      });
+    return () => { active = false; };
+  }, []);
 
   return (
     <footer className="bg-[#111111] border-t border-white/8 mt-auto">
@@ -107,29 +123,32 @@ export default function Footer() {
           <div>
             <h3 className="text-fuchsiusWhite text-[11px] font-bold tracking-[0.22em]
                            uppercase mb-5">
-              HEARTH SANCTUARY
+              {restaurant?.name || 'HEARTH SANCTUARY'}
             </h3>
             <div className="space-y-3 text-[13px]">
-              <p className="text-gray-400 leading-relaxed">
-                44 Ironwood Pavilion, Galle Fort<br />
-                Southern Province, Sri Lanka
-              </p>
-              <p className="text-gray-400 mt-4">
-                <a
-                  href="mailto:reservations@fuchsius.com"
-                  className="hover:text-fuchsiusWhite transition-colors duration-200"
-                >
-                  reservations@fuchsius.com
-                </a>
-              </p>
-              <p className="text-gray-400">
-                <a
-                  href="tel:+94914588900"
-                  className="hover:text-fuchsiusWhite transition-colors duration-200"
-                >
-                  +94 (91) 458 8900
-                </a>
-              </p>
+              {restaurant ? (
+                <>
+                  <p className="text-gray-400 leading-relaxed">
+                    <a href={restaurant.mapUrl} target="_blank" rel="noreferrer" className="hover:text-fuchsiusWhite transition-colors duration-200">
+                      {restaurant.address}
+                    </a>
+                  </p>
+                  <p className="mt-4 text-gray-400">
+                    <a href={`mailto:${restaurant.email}`} className="hover:text-fuchsiusWhite transition-colors duration-200">
+                      {restaurant.email}
+                    </a>
+                  </p>
+                  <p className="text-gray-400">
+                    <a href={`tel:${restaurant.phone.replace(/[^\d+]/g, '')}`} className="hover:text-fuchsiusWhite transition-colors duration-200">
+                      {restaurant.phone}
+                    </a>
+                  </p>
+                </>
+              ) : contactError ? (
+                <p role="status" className="text-gray-500">Contact details unavailable.</p>
+              ) : (
+                <p className="text-gray-500">Loading contact details...</p>
+              )}
             </div>
           </div>
         </div>
