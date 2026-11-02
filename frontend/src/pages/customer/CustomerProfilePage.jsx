@@ -10,13 +10,14 @@ import PraneethaFooter from '../../components/profile/PraneethaFooter.jsx';
 import Navbar from '../../components/layout/Navbar.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useCart } from '../../context/CartContext.jsx';
+import { api } from '../../services/api.js';
 import { ShoppingBag, ArrowLeft } from 'lucide-react';
 
 export default function CustomerProfilePage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { tab: paramTab } = useParams();
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const { itemCount } = useCart();
 
   // Tab state: 'profile' (Profile 1), 'orders' (Profile 2 & 2.2), 'saved' (Profile 3), 'security' (Profile 4)
@@ -45,6 +46,27 @@ export default function CustomerProfilePage() {
     };
   });
 
+  // Sync with server profile on mount (persists across page reloads)
+  useEffect(() => {
+    let active = true;
+    api.get('/auth/me')
+      .then(res => {
+        if (active && res.data) {
+          const synced = {
+            name: res.data.name || 'Thrishala Weerasekara',
+            email: res.data.email || 'thrishala@example.lk',
+            phone: res.data.phone || '',
+            city: res.data.city || '',
+            address: res.data.address || '',
+          };
+          setPatronProfile(synced);
+          localStorage.setItem('praneetha_patron_profile', JSON.stringify(synced));
+        }
+      })
+      .catch(() => {});
+    return () => { active = false; };
+  }, []);
+
   // Sync state to URL params
   useEffect(() => {
     const params = {};
@@ -70,9 +92,20 @@ export default function CustomerProfilePage() {
     setSelectedOrderId(null);
   };
 
-  const handleUpdateProfile = (updatedData) => {
+  const handleUpdateProfile = async (updatedData) => {
     setPatronProfile(updatedData);
     localStorage.setItem('praneetha_patron_profile', JSON.stringify(updatedData));
+    if (updateUser) updateUser(updatedData);
+
+    try {
+      const res = await api.put('/auth/profile', updatedData);
+      if (res.data) {
+        setPatronProfile(res.data);
+        localStorage.setItem('praneetha_patron_profile', JSON.stringify(res.data));
+      }
+    } catch (err) {
+      console.warn('Failed to sync profile update to server:', err.message);
+    }
   };
 
   const handleLogout = () => {

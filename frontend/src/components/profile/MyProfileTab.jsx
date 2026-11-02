@@ -26,6 +26,18 @@ export default function MyProfileTab({ profile, onUpdateProfile }) {
   });
   const [savedSuccess, setSavedSuccess] = useState(false);
 
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        name: profile.name || '',
+        email: profile.email || '',
+        phone: profile.phone || '',
+        city: profile.city || '',
+        address: profile.address || '',
+      });
+    }
+  }, [profile]);
+
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };

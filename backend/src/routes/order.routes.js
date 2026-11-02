@@ -1,9 +1,32 @@
 import { Router } from 'express';
 import { quoteCart, text, fail } from '../lib/validation.js';
-import { protect, adminOnly } from '../middleware/auth.middleware.js';
+import { protect, adminOnly, customerOnly, optionalAuth } from '../middleware/auth.middleware.js';
 import jwt from 'jsonwebtoken';
 
 const router = Router();
+const orderInclude = { items: { include: { menuItem: true } } };
+
+// Customer order history and single-order access are always scoped to the token owner.
+router.get('/mine', protect, customerOnly, async (req, res, next) => {
+  try {
+    const orders = await req.prisma.order.findMany({
+      where: { userId: req.user.id },
+      include: orderInclude,
+      orderBy: { createdAt: 'desc' },
+    });
+    res.json({ success: true, data: orders, count: orders.length });
+  } catch (err) { next(err); }
+});
+
+router.get('/mine/:id', protect, customerOnly, async (req, res, next) => {
+  try {
+    const id = /^[0-9]+$/.test(String(req.params.id)) ? Number(req.params.id) : null;
+    if (!id) return res.status(400).json({ success: false, message: 'Order id must be a positive integer' });
+    const order = await req.prisma.order.findFirst({ where: { id, userId: req.user.id }, include: orderInclude });
+    if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+    res.json({ success: true, data: order });
+  } catch (err) { next(err); }
+});
 
 // ─── GET /api/orders ─────────────────────────────────────────────────────────
 router.get('/', protect, adminOnly, async (req, res, next) => {
@@ -20,11 +43,14 @@ router.get('/', protect, adminOnly, async (req, res, next) => {
 });
 
 // ─── GET /api/orders/:id ─────────────────────────────────────────────────────
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', optionalAuth, async (req, res, next) => {
   try {
+    const id = /^[0-9]+$/.test(String(req.params.id)) ? Number(req.params.id) : null;
+    if (!id) return res.status(400).json({ success: false, message: 'Order id must be a positive integer' });
+    if (!req.user) return res.status(401).json({ success: false, message: 'Sign in to view this order' });
     const order = await req.prisma.order.findUnique({
-      where: { id: +req.params.id },
-      include: { items: { include: { menuItem: true } } },
+      where: { id, ...(req.user.role === 'ADMIN' ? {} : { userId: req.user.id }) },
+      include: orderInclude,
     });
     if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
     res.json({ success: true, data: order });

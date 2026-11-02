@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, Check, ArrowRight, Mail } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
+import { Clock, Check, ArrowRight, Mail, AlertCircle, Shield } from 'lucide-react';
+import { api } from '../../services/api.js';
 
-export default function ForgotPasswordCard({ onSwitchToLogin, onSwitchToResetPassword }) {
+export default function ForgotPasswordCard({ onSwitchToLogin, onSwitchToResetPassword, isAdmin: propIsAdmin }) {
+  const [searchParams] = useSearchParams();
+  const isAdmin = Boolean(propIsAdmin || searchParams.get('role') === 'admin');
+
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [secondsRemaining, setSecondsRemaining] = useState(15 * 60); // 15 mins
 
   // Countdown timer for 15 minutes token
@@ -21,27 +27,60 @@ export default function ForgotPasswordCard({ onSwitchToLogin, onSwitchToResetPas
     return `${m}:${s < 10 ? '0' : ''}${s}`;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setErrorMessage('');
 
-    setTimeout(() => {
-      setLoading(false);
+    // Dedicated admin endpoint for administrators, unified endpoint for customers
+    const endpoint = isAdmin ? '/auth/admin/forgot-password' : '/auth/forgot-password';
+
+    try {
+      const res = await api.post(endpoint, { email });
+      if (res.data?.resetToken) {
+        sessionStorage.setItem('fuchsius_reset_token', res.data.resetToken);
+        sessionStorage.setItem('fuchsius_reset_email', email);
+        sessionStorage.setItem('fuchsius_reset_role', isAdmin ? 'admin' : 'customer');
+      }
       setSent(true);
-    }, 900);
+    } catch (err) {
+      setErrorMessage(err.message || 'Failed to dispatch reset link');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="w-full praneetha-card-frame p-7 sm:p-9 animate-fade-in">
+      {/* ─── Role Indicator Tag ─── */}
+      {isAdmin && (
+        <div className="flex justify-center mb-4">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#e66200]/10 border border-[#e66200]/30 text-[#e66200] text-[11px] font-mono tracking-wider uppercase font-semibold">
+            <Shield className="w-3 h-3" />
+            ADMINISTRATOR ACCESS RECOVERY
+          </span>
+        </div>
+      )}
+
       {/* ─── Title & Subtitle ─── */}
       <div className="text-center mb-7">
         <h1 className="font-serif text-3xl sm:text-[34px] font-normal text-white tracking-wide">
-          Forgot Password?
+          {isAdmin ? 'Admin Password Recovery' : 'Forgot Password?'}
         </h1>
         <p className="text-neutral-400 text-xs sm:text-[13px] mt-2 font-sans leading-relaxed">
-          Enter your registered patron email to receive an authenticated access link.
+          {isAdmin
+            ? 'Enter your registered administrator email to receive an authenticated reset link.'
+            : 'Enter your registered patron email to receive an authenticated access link.'}
         </p>
       </div>
+
+      {/* ─── Error Notification Banner ─── */}
+      {errorMessage && (
+        <div className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs animate-slide-down flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+          <span>{errorMessage}</span>
+        </div>
+      )}
 
       {/* ─── Success Notification Banner ─── */}
       {sent && (
@@ -55,7 +94,7 @@ export default function ForgotPasswordCard({ onSwitchToLogin, onSwitchToResetPas
           </p>
           <button
             type="button"
-            onClick={onSwitchToResetPassword}
+            onClick={() => onSwitchToResetPassword(isAdmin)}
             className="mt-2 inline-flex items-center gap-1.5 text-xs text-[#e66200] hover:text-orange-400 font-semibold underline underline-offset-4"
           >
             <span>Proceed to Reset Password Page</span>
@@ -65,12 +104,12 @@ export default function ForgotPasswordCard({ onSwitchToLogin, onSwitchToResetPas
       )}
 
       {/* ─── Form ─── */}
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6" autoComplete="off">
         {/* Email Address with REQUIRED badge */}
         <div>
           <div className="flex justify-between items-center mb-1.5">
             <label className="text-[11px] font-semibold text-neutral-400 tracking-wider uppercase">
-              EMAIL ADDRESS
+              {isAdmin ? 'ADMINISTRATOR EMAIL' : 'EMAIL ADDRESS'}
             </label>
             <span className="text-[10px] font-mono tracking-wider text-neutral-400 font-semibold uppercase">
               REQUIRED
@@ -81,7 +120,7 @@ export default function ForgotPasswordCard({ onSwitchToLogin, onSwitchToResetPas
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your registered email address"
+              placeholder={isAdmin ? 'admin@fuchsius.com' : 'Enter your registered email address'}
               required
               className="w-full praneetha-input pr-10"
             />
@@ -123,7 +162,7 @@ export default function ForgotPasswordCard({ onSwitchToLogin, onSwitchToResetPas
         <span>Remember your credentials? </span>
         <button
           type="button"
-          onClick={onSwitchToLogin}
+          onClick={() => onSwitchToLogin(isAdmin)}
           className="text-[#e66200] hover:text-orange-400 font-semibold uppercase tracking-wider transition-colors ml-1"
         >
           BACK TO LOGIN

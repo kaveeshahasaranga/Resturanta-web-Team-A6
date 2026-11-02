@@ -10,11 +10,13 @@ import {
   Monitor,
   Check,
 } from 'lucide-react';
+import { api } from '../../services/api.js';
 
 export default function SecurityTab({ userEmail = 'thrishala@example.lk' }) {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
@@ -23,12 +25,26 @@ export default function SecurityTab({ userEmail = 'thrishala@example.lk' }) {
   const [toastMessage, setToastMessage] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const handleUpdatePassword = (e) => {
+  const handleUpdatePassword = async (e) => {
     e.preventDefault();
+    if (!currentPassword) {
+      setToastMessage({
+        type: 'error',
+        text: 'Please enter your current authentication passkey.',
+      });
+      return;
+    }
     if (!newPassword) {
       setToastMessage({
         type: 'error',
         text: 'Please enter your new authentication passkey.',
+      });
+      return;
+    }
+    if (newPassword.length < 6) {
+      setToastMessage({
+        type: 'error',
+        text: 'New password must be at least 6 characters long.',
       });
       return;
     }
@@ -40,14 +56,29 @@ export default function SecurityTab({ userEmail = 'thrishala@example.lk' }) {
       return;
     }
 
-    setToastMessage({
-      type: 'success',
-      text: 'Passkey successfully rotated. Encrypted under AES-256 standards.',
-    });
-    setCurrentPassword(newPassword);
-    setNewPassword('');
-    setConfirmPassword('');
-    setTimeout(() => setToastMessage(null), 4000);
+    setLoading(true);
+    try {
+      await api.post('/auth/change-password', {
+        currentPassword,
+        newPassword,
+      });
+
+      setToastMessage({
+        type: 'success',
+        text: 'Passkey successfully rotated. Encrypted under AES-256 and bcrypt standards.',
+      });
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setTimeout(() => setToastMessage(null), 4000);
+    } catch (err) {
+      setToastMessage({
+        type: 'error',
+        text: err.message || 'Failed to update passkey. Please verify your current password.',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleLogoutAllSessions = () => {

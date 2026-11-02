@@ -24,15 +24,46 @@ async function main() {
 
   const customer = await prisma.user.upsert({
     where: { email: 'customer@fuchsius.com' },
-    update: { password: customerPassword, role: 'CUSTOMER' },
+    update: {
+      password: customerPassword,
+      role: 'CUSTOMER',
+      phone: '071 987 6543',
+      city: 'Kandy',
+      address: '12 Peradeniya Road, Kandy',
+    },
     create: {
       name: 'Kasun Bandara',
       email: 'customer@fuchsius.com',
       password: customerPassword,
       role: 'CUSTOMER',
+      phone: '071 987 6543',
+      city: 'Kandy',
+      address: '12 Peradeniya Road, Kandy',
     },
   });
   console.log('✅  Customer user ready:', customer.email, '(password: password123)');
+
+  const thrishalaPassword = await bcrypt.hash('password123', 10);
+  const thrishala = await prisma.user.upsert({
+    where: { email: 'thrishala@example.lk' },
+    update: {
+      password: thrishalaPassword,
+      role: 'CUSTOMER',
+      phone: '077 123 4567',
+      city: 'Colombo',
+      address: '45 Temple Road, Colombo 05',
+    },
+    create: {
+      name: 'Thrishala Weerasekara',
+      email: 'thrishala@example.lk',
+      password: thrishalaPassword,
+      role: 'CUSTOMER',
+      phone: '077 123 4567',
+      city: 'Colombo',
+      address: '45 Temple Road, Colombo 05',
+    },
+  });
+  console.log('✅  Thrishala customer user ready:', thrishala.email, '(password: password123)');
 
   // ─── 2. Categories ─────────────────────────────────────────────────────────
   const categories = [

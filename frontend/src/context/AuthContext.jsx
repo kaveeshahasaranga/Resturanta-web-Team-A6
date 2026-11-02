@@ -40,10 +40,18 @@ export function AuthProvider({ children }) {
     setUser(null);
   }, []);
 
+  const updateUser = useCallback((updatedUser) => {
+    setUser(prev => {
+      const merged = { ...(prev || {}), ...updatedUser };
+      localStorage.setItem('fuchsius_user', JSON.stringify(merged));
+      return merged;
+    });
+  }, []);
+
   const isAdmin = user?.role === 'ADMIN';
 
   return (
-    <AuthContext.Provider value={{ user, loading, isAdmin, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, isAdmin, login, register, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
